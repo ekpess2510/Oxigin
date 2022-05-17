@@ -12,14 +12,15 @@ Future main() async {
   runApp(ProviderScope(
       child: MyApp(
     isLoggedIn: loggedIn,
-        name: name,
+    name: name,
   )));
 }
 
 class MyApp extends StatelessWidget {
   var isLoggedIn;
   var name;
-  MyApp({Key? key, required this.isLoggedIn, required this.name}) : super(key: key);
+  MyApp({Key? key, required this.isLoggedIn, required this.name})
+      : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -30,7 +31,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.brown,
       ),
-      home: SplashScreen(name: name, loggedIn: isLoggedIn,),
+      home: SplashScreen(
+        name: name,
+        loggedIn: isLoggedIn,
+      ),
       // routes: {
       //   "first": (context) => Homescreen(),
       //   "second": (context) => Sympage(),

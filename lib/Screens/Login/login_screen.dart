@@ -112,7 +112,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 text: 'Login',
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return const Homescreen(name: '',);
+                    return const Homescreen(
+                      name: '',
+                    );
                   }));
                 },
               ),
