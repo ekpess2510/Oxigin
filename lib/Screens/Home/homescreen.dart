@@ -4,9 +4,24 @@ import 'package:flutter/services.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myoxigin/Screens/Home/sympage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Homescreen extends StatelessWidget {
+class Homescreen extends StatefulWidget {
   const Homescreen({Key? key}) : super(key: key);
+
+  @override
+  State<Homescreen> createState() => _HomescreenState();
+}
+
+class _HomescreenState extends State<Homescreen> {
+  String? name;
+
+  @override
+  void initState() {
+    getName();
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,12 +65,12 @@ class Homescreen extends StatelessWidget {
                       image: AssetImage('image/log.png'),
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 16),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16),
                     child: Text(
-                        'Hello Emmanuel, sorry about '
+                        'Hello $name, sorry about '
                         'how you feel, lets start a symptom assesment to know whats wrong.',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontFamily: 'Recoleta',
                           fontSize: 22,
                           fontWeight: FontWeight.w500,
@@ -96,5 +111,10 @@ class Homescreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  getName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    name = prefs.getString('name');
   }
 }

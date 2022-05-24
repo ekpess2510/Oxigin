@@ -31,23 +31,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text('Oxigin\nIs Free',
-              style: GoogleFonts.inter(
-                fontSize: 43,
-                fontWeight: FontWeight.w900,
-                color: const Color.fromRGBO(255, 255, 255, 1),
-              )),
+          Padding(
+            padding: const EdgeInsets.only(left: 10.0),
+            child: Text('Oxigin\nIs Free',
+                style: GoogleFonts.inter(
+                  fontSize: 43,
+                  fontWeight: FontWeight.w900,
+                  color: const Color.fromRGBO(255, 255, 255, 1),
+                )),
+          ),
           const SizedBox(
             height: 10,
           ),
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.7,
-            child: Text(
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt .',
-                style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: const Color.fromRGBO(204, 204, 204, 1))),
+          Padding(
+            padding: const EdgeInsets.only(left: 10.0),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.7,
+              child: Text(
+                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt .',
+                  style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: const Color.fromRGBO(204, 204, 204, 1))),
+            ),
           ),
           const SizedBox(
             height: 20,

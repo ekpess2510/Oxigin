@@ -3,8 +3,10 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '../../Constant/result_list.dart';
+import '../../Constant/symp_list.dart';
 import 'widgets/ass_result_listtile.dart';
 import 'widgets/modal_sheet.dart';
 
@@ -150,20 +152,20 @@ class AssesmentResult extends StatelessWidget {
               ),
               ListView.builder(
                   shrinkWrap: true,
-                  itemCount: resultList.length,
+                  itemCount: diagnoList.length,
                   itemBuilder: ((context, index) {
                     return GestureDetector(
                       onTap: () {
-                        showModalBottomSheet(
-                            isScrollControlled: false,
+                        showMaterialModalBottomSheet(
+                            expand: true,
                             isDismissible: true,
                             context: context,
                             builder: (context) {
                               return ModalSheet(
-                                title: resultList[index].title,
+                                title: diagnoList[index].name,
                                 percentage: resultList[index].subtitle +
                                     ' ' +
-                                    resultList[index].trailing,
+                                    '${diagnoList[index].probability}',
                                 reason: '',
                               );
                             });
@@ -171,9 +173,9 @@ class AssesmentResult extends StatelessWidget {
                       child: Column(
                         children: [
                           AssesmentListTile(
-                            title: resultList[index].title,
-                            subtitle: resultList[index].subtitle,
-                            trailing: resultList[index].trailing,
+                            title: diagnoList[index].name,
+                            subtitle: diagnoList[index].commonName,
+                            trailing: '${diagnoList[index].probability}',
                           ),
                           const Divider()
                         ],

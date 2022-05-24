@@ -39,6 +39,8 @@ dependencies:
   flutter_svg: ^1.0.3
   flutter_riverpod: ^1.0.3
   modal_bottom_sheet: ^2.0.1
+  http: ^0.13.4
+  shared_preferences: ^2.0.15
 
 dev_dependencies:
   flutter_test:
