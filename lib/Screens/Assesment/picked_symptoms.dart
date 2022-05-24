@@ -5,6 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 import '../../Constant/selected_list.dart';
+import '../../Constant/symp_list.dart';
+import '../../Model/diagnosis_model.dart';
+import '../../Service/api_service.dart';
 import '../SearchScreen/Search.dart';
 import 'symptoms_options.dart';
 import 'widgets/symptoms_container.dart';
@@ -19,6 +22,7 @@ class PickedSystoms extends ConsumerStatefulWidget {
 class _PickedSystomsState extends ConsumerState<PickedSystoms> {
   @override
   Widget build(BuildContext context) {
+    //final data = ref.read(diagnosisProvider);
     return Scaffold(
         backgroundColor: HexColor('ffffff'),
         appBar: AppBar(
@@ -137,10 +141,7 @@ class _PickedSystomsState extends ConsumerState<PickedSystoms> {
                       const Spacer(),
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return const SymptomsOptions();
-                          }));
+                          onPressed();
                         },
                         child: Container(
                           height: 48,
@@ -164,5 +165,31 @@ class _PickedSystomsState extends ConsumerState<PickedSystoms> {
             ),
           ),
         ));
+  }
+
+  var service = ApiService();
+
+  onPressed() async {
+    service.postDiagnosis('diagnosis', 'male', 14, items).then((value) {
+      if (value.question != null) {
+        tempList.clear();
+        diagnoList.clear();
+        for (var i = 0; i < value.question.items.length; i++) {
+          tempList.add(value.question.items[i].name);
+        }
+        //print(value.conditions[0].name);
+        print(value.conditions.length);
+        diagnoList.add(value.conditions[0]);
+        for (var i = 0; i < value.conditions.length; i++) {
+          diagnoList.add(value.conditions[i]);
+        }
+        print(value.conditions[0].probability);
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return SymptomsOptions(
+            question: value.question.text,
+          );
+        }));
+      }
+    });
   }
 }

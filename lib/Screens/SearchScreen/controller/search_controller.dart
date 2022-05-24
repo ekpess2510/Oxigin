@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../Constant/dummy_search_list.dart';
 import '../../../Constant/selected_list.dart';
+import '../../../Model/search_model.dart';
 
 class SearchNotifier extends ChangeNotifier {
   List searchItems = [];
@@ -22,11 +23,11 @@ class SearchNotifier extends ChangeNotifier {
     }
   }
 
-  searchOperation(String searchText) async {
+  searchOperation(String searchText, List<SearchModel> lists) async {
     searchItems.clear();
     if (isSearching == true) {
       for (int i = 0; i < lists.length; i++) {
-        String data = lists[i].title;
+        String data = lists[i].name!;
         if (data.toLowerCase().contains(searchText.toLowerCase())) {
           searchItems.add(lists[i]);
         }

@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'Screens/Home/homescreen.dart';
 import 'Screens/SplashScreen/splash_screen.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const ProviderScope(child: MyApp()));
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var loggedIn = prefs.getBool('loggedIn');
+  runApp(ProviderScope(
+      child: MyApp(
+    isLoggedIn: loggedIn,
+  )));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  var isLoggedIn;
+  MyApp({Key? key, required this.isLoggedIn}) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -19,7 +27,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.brown,
       ),
-      home: const SplashScreen(),
+      home: isLoggedIn == true ? const Homescreen() : const SplashScreen(),
       // routes: {
       //   "first": (context) => Homescreen(),
       //   "second": (context) => Sympage(),

@@ -1,1 +1,3 @@
 List selectedItems = [];
+
+List items = [];

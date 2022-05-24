@@ -10,7 +10,14 @@ import 'assesment_result.dart';
 import 'widgets/selection_list.dart';
 
 class SymptomsOptions extends ConsumerWidget {
-  const SymptomsOptions({Key? key}) : super(key: key);
+  final String question;
+  const SymptomsOptions({Key? key, required this.question}) : super(key: key);
+
+  // @override
+  // void dispose() {
+  //   tempList.clear();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context, ref) {
@@ -46,10 +53,10 @@ class SymptomsOptions extends ConsumerWidget {
               height: 2,
               color: const Color.fromRGBO(0, 0, 0, 1),
             ),
-            const Padding(
-              padding: EdgeInsets.only(top: 25, left: 20),
-              child: Text('What’s your body temperature?',
-                  style: TextStyle(
+            Padding(
+              padding: const EdgeInsets.only(top: 25, left: 20),
+              child: Text(question,
+                  style: const TextStyle(
                     fontFamily: 'Recoleta',
                     fontSize: 20,
                     fontWeight: FontWeight.w400,

@@ -31,7 +31,7 @@ class AssesmentListTile extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: FontWeight.w400,
-            color: const Color.fromRGBO(1, 165, 96, 1),
+            color: Color.fromARGB(255, 136, 18, 18),
           )),
     );
   }
