@@ -203,7 +203,9 @@ class _SignupScreenState extends State<SignupScreen> {
     prefs.setString('name', _fullNameController.text);
     prefs.setBool('loggedIn', true);
     Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return Homescreen(name: _fullNameController.text,);
+      return Homescreen(
+        name: _fullNameController.text,
+      );
     }));
   }
 }
