@@ -168,7 +168,7 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
         }
         for (var i = 0; i < value.question.items.length; i++) {
           if (value.question.type == 'single') {
-            for(int j = 0; j < value.question.items[0].choices.length; j++){
+            for (int j = 0; j < value.question.items[0].choices.length; j++) {
               tempList.add(value.question.items[0].choices[j].label);
             }
           } else {
@@ -182,19 +182,18 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
         }
         print(value.conditions[0].probability);
         questionAsk++;
-        if(questionAsk < 4){
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        if (questionAsk < 4) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
             return SymptomsOptions(
               question: value.question.text,
             );
           }));
-        }
-        else{
+        } else {
           Navigator.push(context, MaterialPageRoute(builder: ((context) {
             return const AssesmentResult();
           })));
         }
-
       } else {
         Navigator.push(context, MaterialPageRoute(builder: ((context) {
           return const AssesmentResult();

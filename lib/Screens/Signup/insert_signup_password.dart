@@ -16,7 +16,6 @@ class SignUpPasswordScreen extends ConsumerStatefulWidget {
   final String userName;
   final String age;
   final String gender;
-
   const SignUpPasswordScreen(
       {Key? key,
       required this.email,
@@ -238,7 +237,6 @@ class _SignUpPasswordScreenState extends ConsumerState<SignUpPasswordScreen> {
       ),
     );
   }
-
 }
 
 storeDetails(String userId, String fullName, String age, String email,

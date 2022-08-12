@@ -5,11 +5,10 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:myoxigin/Screens/auth/auth_checker.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
-
 class SplashScreen extends StatefulWidget {
-
-  const SplashScreen({Key? key,})
-      : super(key: key);
+  const SplashScreen({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -20,10 +19,8 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 6), () {
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const AuthChecker()));
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => const AuthChecker()));
     });
   }
 

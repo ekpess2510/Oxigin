@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Constant/selected_list.dart';
 import '../../Constant/symp_list.dart';
-import '../../Model/diagnosis_model.dart';
 import '../../Service/api_service.dart';
 import '../SearchScreen/Search.dart';
 import 'symptoms_options.dart';
