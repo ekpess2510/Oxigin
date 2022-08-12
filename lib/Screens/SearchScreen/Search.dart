@@ -127,14 +127,8 @@ class _SearchState extends ConsumerState<Search> {
                                         subTitle: controller
                                             .searchItems[index].commonName,
                                         onTap: () {
-                                          Map<String, String> rand = {
-                                            'id': controller
-                                                .searchItems[index].id,
-                                            "choice_id": "present"
-                                          };
-                                          items.add(rand);
                                           controller.symptonSelected(controller
-                                              .searchItems[index].name);
+                                              .searchItems[index]);
                                         },
                                       );
                                     })),

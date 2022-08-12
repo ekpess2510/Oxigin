@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1027150171592",
+    "project_id": "oxigin-311be",
+    "storage_bucket": "oxigin-311be.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1027150171592:android:24d9667ad6ccb0dc1f84fd",
+        "android_client_info": {
+          "package_name": "com.example.myoxigin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1027150171592-udsf2areh504k19k7tdfunm19o8e32eu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCTeD-imM-kE4F9MQ8vHeW3fhf9CZFEcM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1027150171592-udsf2areh504k19k7tdfunm19o8e32eu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Constant/selected_list.dart';
 import '../../Constant/symp_list.dart';
-import '../../Model/diagnosis_model.dart';
 import '../../Service/api_service.dart';
 import '../SearchScreen/Search.dart';
 import 'symptoms_options.dart';
@@ -170,12 +170,19 @@ class _PickedSystomsState extends ConsumerState<PickedSystoms> {
   var service = ApiService();
 
   onPressed() async {
-    service.postDiagnosis('diagnosis', 'male', 14, items).then((value) {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //var gender = prefs.getString('gender');
+    var age = prefs.getString('age');
+    service.postDiagnosis('diagnosis', 'male', 20, items).then((value) {
       if (value.question != null) {
         tempList.clear();
         diagnoList.clear();
         for (var i = 0; i < value.question.items.length; i++) {
-          tempList.add(value.question.items[i].name);
+          if (value.question.type == 'single') {
+            tempList.add(value.question.items[0].choices[i].label);
+          } else {
+            tempList.add(value.question.items[i].name);
+          }
         }
         //print(value.conditions[0].name);
         print(value.conditions.length);

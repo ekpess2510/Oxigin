@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
-
-import '../Onboarding/onboarding_screen.dart';
+import 'package:myoxigin/Screens/auth/auth_checker.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -16,10 +18,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(
-        const Duration(seconds: 10),
-        () => Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const OnboardingScreen())));
+    Timer(const Duration(seconds: 6), () {
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => const AuthChecker()));
+    });
   }
 
   @override
@@ -39,13 +41,16 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
           ),
           const Spacer(),
-          Container(
-            width: MediaQuery.of(context).size.width * 0.7,
-            height: 8,
-            decoration: const BoxDecoration(
-              color: Color.fromRGBO(0, 0, 0, 1),
-            ),
-          )
+          LinearPercentIndicator(
+            padding: const EdgeInsets.all(0),
+            width: MediaQuery.of(context).size.width,
+            animation: true,
+            lineHeight: 10.0,
+            animationDuration: 4000,
+            percent: 1,
+            barRadius: Radius.zero,
+            progressColor: const Color.fromRGBO(0, 0, 0, 1),
+          ),
         ]),
       ),
     );

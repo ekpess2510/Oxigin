@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SymOptionNotifier extends ChangeNotifier {
   String selectedOption = '';
-  onSelection(String? value) {
+  onSelection(String? value, String result) {
     selectedOption = value!;
+    result = selectedOption;
     notifyListeners();
   }
 }

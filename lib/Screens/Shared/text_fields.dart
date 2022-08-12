@@ -4,11 +4,14 @@ import 'package:google_fonts/google_fonts.dart';
 class AppTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
+  final bool? obscure;
   final String? Function(String?)? validator;
+
   const AppTextField(
       {Key? key,
       required this.controller,
       required this.hintText,
+      this.obscure = false,
       this.validator})
       : super(key: key);
 
@@ -17,6 +20,7 @@ class AppTextField extends StatelessWidget {
     return TextFormField(
         controller: controller,
         validator: validator,
+        obscureText: obscure!,
         decoration: InputDecoration(
           isDense: true,
           hintText: hintText,

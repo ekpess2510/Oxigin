@@ -30,13 +30,13 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: HexColor('ffffff'),
-      appBar: AppBar(
+      /*appBar: AppBar(
         systemOverlayStyle: const SystemUiOverlayStyle(
           // Status bar color
           statusBarColor: Colors.white,
           statusBarIconBrightness: Brightness.dark,
         ),
-        toolbarHeight: 100,
+        //toolbarHeight: 100,
         // leading: Padding(
         //   padding: const EdgeInsets.only(top: 15),
         //   child: Image.asset('image/log.png', height: 52, width: 35),
@@ -44,15 +44,16 @@ class _SignupScreenState extends State<SignupScreen> {
         backgroundColor: HexColor('ffffff'),
         elevation: 0,
         leadingWidth: 0,
-      ),
+      ),*/
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
         child: SingleChildScrollView(
           child: SizedBox(
-            height: MediaQuery.of(context).size.height - 150,
+            height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const SizedBox(height: 25),
               Image.asset('image/log.png', height: 52, width: 35),
               const SizedBox(
                 height: 20,
@@ -136,16 +137,16 @@ class _SignupScreenState extends State<SignupScreen> {
               AppTextButton(
                 text: 'Proceed',
                 onPressed: () {
-                  saveDetails();
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: ((context) {
-                  //   return SignUpPasswordScreen(
-                  //     email: _emailController.text,
-                  //     userName: _fullNameController.text,
-                  //     age: _ageController.text,
-                  //     gender: _genderController.text,
-                  //   );
-                  // })));
+                  //saveDetails();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: ((context) {
+                    return SignUpPasswordScreen(
+                      email: _emailController.text,
+                      userName: _fullNameController.text,
+                      age: _ageController.text,
+                      gender: _genderController.text,
+                    );
+                  })));
                 },
               ),
               const SizedBox(
@@ -161,32 +162,32 @@ class _SignupScreenState extends State<SignupScreen> {
                       fontWeight: FontWeight.w400,
                       color: const Color.fromRGBO(18, 18, 18, 0.56))),
               const Spacer(),
-              // Center(
-              //   child: RichText(
-              //       text: TextSpan(children: [
-              //     TextSpan(
-              //         text: 'Already have an account? ',
-              //         style: GoogleFonts.inter(
-              //             fontSize: 15,
-              //             fontWeight: FontWeight.w400,
-              //             color: const Color.fromRGBO(18, 18, 18, 0.56))),
-              //     TextSpan(
-              //       text: 'Login',
-              //       style: const TextStyle(
-              //         fontSize: 14,
-              //         fontWeight: FontWeight.w400,
-              //         color: Color.fromRGBO(18, 18, 18, 1),
-              //       ),
-              //       recognizer: TapGestureRecognizer()
-              //         ..onTap = () {
-              //           Navigator.push(
-              //               context,
-              //               MaterialPageRoute(
-              //                   builder: (context) => const LoginScreen()));
-              //         },
-              //     ),
-              //   ])),
-              // ),
+              Center(
+                child: RichText(
+                    text: TextSpan(children: [
+                  TextSpan(
+                      text: 'Already have an account? ',
+                      style: GoogleFonts.inter(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: const Color.fromRGBO(18, 18, 18, 0.56))),
+                  TextSpan(
+                    text: 'Login',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Color.fromRGBO(18, 18, 18, 1),
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const LoginScreen()));
+                      },
+                  ),
+                ])),
+              ),
               const SizedBox(
                 height: 40,
               )
@@ -205,7 +206,9 @@ class _SignupScreenState extends State<SignupScreen> {
     prefs.setString('name', _fullNameController.text);
     prefs.setBool('loggedIn', true);
     Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return const Homescreen();
+      return Homescreen(
+        name: _fullNameController.text,
+      );
     }));
   }
 }
