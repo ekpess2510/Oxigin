@@ -2,16 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:myoxigin/Screens/Home/homescreen.dart';
+import 'package:myoxigin/Screens/auth/auth_checker.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
-import '../Onboarding/onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  final bool loggedIn;
-  final String name;
 
-  const SplashScreen({Key? key, required this.loggedIn, required this.name})
+  const SplashScreen({Key? key,})
       : super(key: key);
 
   @override
@@ -22,13 +19,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 10), () {
+    Timer(const Duration(seconds: 6), () {
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (context) => widget.loggedIn == true
-                  ? Homescreen(name: widget.name)
-                  : const OnboardingScreen()));
+              builder: (context) => const AuthChecker()));
     });
   }
 

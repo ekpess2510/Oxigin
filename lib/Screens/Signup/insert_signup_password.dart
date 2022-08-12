@@ -1,19 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../Provider/auth_provider.dart';
 import '../Login/login_screen.dart';
 import '../Shared/text_button.dart';
 import '../Shared/text_fields.dart';
 
-class SignUpPasswordScreen extends StatefulWidget {
+class SignUpPasswordScreen extends ConsumerStatefulWidget {
   final String email;
   final String userName;
   final String age;
   final String gender;
+
   const SignUpPasswordScreen(
       {Key? key,
       required this.email,
@@ -23,16 +26,36 @@ class SignUpPasswordScreen extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<SignUpPasswordScreen> createState() => _SignUpPasswordScreenState();
+  ConsumerState<SignUpPasswordScreen> createState() =>
+      _SignUpPasswordScreenState();
 }
 
-class _SignUpPasswordScreenState extends State<SignUpPasswordScreen> {
+class _SignUpPasswordScreenState extends ConsumerState<SignUpPasswordScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final model = ref.watch(authRepositoryProvider);
+    final data = ref.watch(fireBaseAuthProvider);
+
+    signUp() async {
+      await model
+          .signUpWithEmailAndPassword(
+              widget.email, _passwordController.text, context)
+          .whenComplete(() {
+        model.authStateChange.listen((event) {
+          print(data.currentUser!.uid);
+          storeDetails(data.currentUser!.uid, widget.userName, widget.age,
+              widget.email, widget.gender);
+          if (event == null) {
+            return;
+          }
+        });
+      });
+    }
+
     return Scaffold(
       backgroundColor: HexColor('ffffff'),
       appBar: AppBar(
@@ -89,6 +112,7 @@ class _SignUpPasswordScreenState extends State<SignUpPasswordScreen> {
               AppTextField(
                 hintText: 'Enter a strong password',
                 controller: _passwordController,
+                obscure: true,
               ),
               const SizedBox(
                 height: 30,
@@ -104,6 +128,7 @@ class _SignUpPasswordScreenState extends State<SignUpPasswordScreen> {
               AppTextField(
                 hintText: 'Retype your password',
                 controller: _confirmPasswordController,
+                obscure: true,
               ),
               const SizedBox(
                 height: 15,
@@ -161,7 +186,9 @@ class _SignUpPasswordScreenState extends State<SignUpPasswordScreen> {
               ),
               AppTextButton(
                 text: 'Proceed',
-                onPressed: () {},
+                onPressed: () {
+                  signUp();
+                },
               ),
               const SizedBox(
                 height: 20,
@@ -212,10 +239,18 @@ class _SignUpPasswordScreenState extends State<SignUpPasswordScreen> {
     );
   }
 
-  saveDetails() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('email', widget.email);
-    prefs.setString('age', widget.age);
-    prefs.setString('gender', widget.gender);
-  }
 }
+
+storeDetails(String userId, String fullName, String age, String email,
+    String gender) async {
+  CollectionReference ref = FirebaseFirestore.instance.collection('users');
+  await ref.doc(userId).set({
+    'id': userId,
+    'full_name': fullName,
+    'age': age,
+    'email': email,
+    'phone': gender,
+  });
+}
+
+//fullname, age, mail, gender
