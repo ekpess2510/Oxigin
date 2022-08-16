@@ -15,25 +15,30 @@ class Diagnosis {
     required this.extras,
     required this.hasEmergencyEvidence,
     required this.interviewToken,
+    required this.shouldStop
   });
 
-  Question question;
+  Question? question;
   List<Condition> conditions;
   Extras extras;
   bool hasEmergencyEvidence;
   String interviewToken;
+  bool shouldStop;
 
   factory Diagnosis.fromJson(Map<String, dynamic> json) => Diagnosis(
-        question: Question.fromJson(json["question"]),
+        question: json["question"] == null
+            ? null
+            : Question.fromJson(json["question"]),
         conditions: List<Condition>.from(
             json["conditions"].map((x) => Condition.fromJson(x))),
         extras: Extras.fromJson(json["extras"]),
         hasEmergencyEvidence: json["has_emergency_evidence"],
+        shouldStop: json["should_stop"],
         interviewToken: json["interview_token"],
       );
 
   Map<String, dynamic> toJson() => {
-        "question": question.toJson(),
+        "question": question!.toJson(),
         "conditions": List<dynamic>.from(conditions.map((x) => x.toJson())),
         "extras": extras.toJson(),
         "has_emergency_evidence": hasEmergencyEvidence,
@@ -114,19 +119,21 @@ class Item {
 
   String id;
   String name;
-  List<Choice> choices;
+  final List<Choice>? choices;
 
   factory Item.fromJson(Map<String, dynamic> json) => Item(
         id: json["id"],
         name: json["name"],
-        choices:
-            List<Choice>.from(json["choices"].map((x) => Choice.fromJson(x))),
+        choices: json['choices'] == null
+            ? []
+            : List<Choice>.from(
+                json["choices"].map((x) => Choice.fromJson(x)).toList()),
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
-        "choices": List<dynamic>.from(choices.map((x) => x.toJson())),
+        "choices": List<dynamic>.from(choices!.map((x) => x.toJson())),
       };
 }
 

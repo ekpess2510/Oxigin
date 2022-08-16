@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import '../Model/diagnosis_model.dart';
 import '../Model/search_model.dart';
+import '../Model/specialist_model.dart';
 import 'api_base_url_helper.dart';
 
 class ApiService {
@@ -20,17 +21,55 @@ class ApiService {
     Map<String, dynamic> data = {
       'sex': sex,
       'age': {'value': age},
-      'evidence': evidence
+      'evidence': evidence,
+      "extras": {
+        "disable_groups": true,
+        "enable_triage_3": true,
+        "interview_mode": "triage"
+      }
     };
     var body = json.encode(data);
-    print(body);
     try {
       var url = Uri.parse(ApiBase.baseUrl + endPoint);
       response = await http.post(url, headers: header, body: body);
-      print(response.statusCode);
+      //print(response.statusCode);
       if (response.statusCode == 200 || response.statusCode == 201) {
         print(response.body);
         return Diagnosis.fromJson(json.decode(response.body));
+      } else if (response.statusCode == 401) {
+        throw http.ClientException('Unauthorized');
+      } else if (response.statusCode == 500) {
+        throw http.ClientException('Server error');
+      } else {
+        throw Exception('Oh darn! Something went wrong');
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<Specialist> postSpecialist(
+      String endPoint, String sex, int age, List evidence) async {
+    http.Response response;
+    Map<String, String> header = {
+      'App-Id': ApiBase.appId,
+      'App-Key': ApiBase.appKey,
+      'Content-Type': 'application/json',
+      //'Dev-Mode': true,
+    };
+    Map<String, dynamic> data = {
+      'sex': sex,
+      'age': {'value': age},
+      'evidence': evidence,
+    };
+    var body = json.encode(data);
+    try {
+      var url = Uri.parse(ApiBase.baseUrl + endPoint);
+      response = await http.post(url, headers: header, body: body);
+      //print(response.statusCode);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print(response.body);
+        return Specialist.fromJson(json.decode(response.body));
       } else if (response.statusCode == 401) {
         throw http.ClientException('Unauthorized');
       } else if (response.statusCode == 500) {

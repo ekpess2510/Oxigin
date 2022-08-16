@@ -3,18 +3,27 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Constant/selected_list.dart';
 import '../../Constant/symp_list.dart';
+import '../../Model/diagnosis_model.dart';
 import '../../Service/api_service.dart';
 import 'Controller/symptoms_options_controller.dart';
 import 'assesment_result.dart';
 import 'widgets/selection_list.dart';
 
 class SymptomsOptions extends ConsumerStatefulWidget {
-  final String question;
-  const SymptomsOptions({Key? key, required this.question}) : super(key: key);
+  final String question, id;
+  final List<Choice> option;
+  final int size;
+
+  const SymptomsOptions(
+      {Key? key,
+      required this.question,
+      required this.option,
+      required this.size,
+      required this.id})
+      : super(key: key);
 
   @override
   SymptomsOptionsState createState() => SymptomsOptionsState();
@@ -22,6 +31,7 @@ class SymptomsOptions extends ConsumerStatefulWidget {
 
 class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
   String result = '';
+
   @override
   Widget build(BuildContext context) {
     var controller = ref.watch(symNotifier);
@@ -82,11 +92,11 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
             ),
             ListView.builder(
                 shrinkWrap: true,
-                itemCount: tempList.length,
+                itemCount: widget.size,
                 itemBuilder: ((context, index) {
                   return SelectionRadioButton(
                     val: controller.selectedOption,
-                    option: tempList[index],
+                    option: widget.option[index].label,
                     onChanged: (String? value) {
                       setState(() {
                         controller.onSelection(value, result);
@@ -112,7 +122,7 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
                   const Spacer(),
                   GestureDetector(
                     onTap: () {
-                      onPressed();
+                      onPressed(controller.selectedOption, widget.id);
                       controller.selectedOption = '';
                       // Navigator.push(context,
                       //     MaterialPageRoute(builder: ((context) {
@@ -145,61 +155,144 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
 
   var service = ApiService();
 
-  onPressed() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var gender = prefs.getString('gender');
-    var age = prefs.getString('age');
-    service.postDiagnosis('diagnosis', 'male', 20, items).then((value) {
-      if (value.question != null) {
-        tempList.clear();
-        diagnoList.clear();
-        if (result == 'No') {
-          Map<String, String> rand = {
-            'id': value.question.items[0].id,
-            "choice_id": 'absent'
-          };
-          items.add(rand);
+  onPressed(String option, String id) async {
+    //SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    if (option == 'No') {
+      items.add({'id': id, 'choice_id': 'absent'});
+      service.postDiagnosis('diagnosis', 'male', 20, items).then((value) {
+        //items.removeAt(0);
+        print(items);
+        questions = value.question!.text;
+        if (value.shouldStop == true) {
+          service
+              .postSpecialist('recommend_specialist', 'male', 20, items)
+              .then((val) {
+            Navigator.push(context, MaterialPageRoute(builder: ((context) {
+              return AssesmentResult(
+                specialist: val,
+                conditions: value.conditions,
+              );
+            })));
+          });
+        }
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return SymptomsOptions(
+            size: value.question!.items[0].choices!.length,
+            option: value.question!.items[0].choices!,
+            question: questions,
+            id: value.question!.items[0].id,
+          );
+        }));
+      });
+    } else if (option == 'Yes') {
+      items.add({'id': id, 'choice_id': 'present'});
+      service.postDiagnosis('diagnosis', 'male', 20, items).then((value) {
+        //items.removeAt(0);
+        print(items);
+        questions = value.question!.text;
+        if (value.shouldStop == true) {
+          service
+              .postSpecialist('recommend_specialist', 'male', 20, items)
+              .then((val) {
+            Navigator.push(context, MaterialPageRoute(builder: ((context) {
+              return AssesmentResult(
+                specialist: val,
+                conditions: value.conditions,
+              );
+            })));
+          });
         } else {
-          Map<String, String> rand = {
-            'id': value.question.items[0].id,
-            "choice_id": 'present'
-          };
-          items.add(rand);
-        }
-        for (var i = 0; i < value.question.items.length; i++) {
-          if (value.question.type == 'single') {
-            for (int j = 0; j < value.question.items[0].choices.length; j++) {
-              tempList.add(value.question.items[0].choices[j].label);
-            }
-          } else {
-            tempList.add(value.question.items[i].name);
-          }
-        }
-        print(value.conditions.length);
-        diagnoList.add(value.conditions[0]);
-        for (var i = 0; i < value.conditions.length; i++) {
-          diagnoList.add(value.conditions[i]);
-        }
-        print(value.conditions[0].probability);
-        questionAsk++;
-        if (questionAsk < 4) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
             return SymptomsOptions(
-              question: value.question.text,
+              size: value.question!.items[0].choices!.length,
+              option: value.question!.items[0].choices!,
+              question: questions,
+              id: value.question!.items[0].id,
             );
           }));
-        } else {
-          Navigator.push(context, MaterialPageRoute(builder: ((context) {
-            return const AssesmentResult();
-          })));
         }
-      } else {
-        Navigator.push(context, MaterialPageRoute(builder: ((context) {
-          return const AssesmentResult();
-        })));
-      }
-    });
+      });
+    } else if (option == "Don't know") {
+      items.add({'id': id, 'choice_id': 'unknown'});
+      service.postDiagnosis('diagnosis', 'male', 20, items).then((value) {
+        //items.removeAt(0);
+        print(items);
+        questions = value.question!.text;
+        if (value.shouldStop == true) {
+          service
+              .postSpecialist('recommend_specialist', 'male', 20, items)
+              .then((val) {
+            Navigator.push(context, MaterialPageRoute(builder: ((context) {
+              return AssesmentResult(
+                specialist: val,
+                conditions: value.conditions,
+              );
+            })));
+          });
+        } else {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return SymptomsOptions(
+              size: value.question!.items[0].choices!.length,
+              option: value.question!.items[0].choices!,
+              question: questions,
+              id: value.question!.items[0].id,
+            );
+          }));
+        }
+      });
+    }
+    // service.postDiagnosis('diagnosis', 'male', 20, items).then((value) {
+    //   if (value.question != null) {
+    //     tempList.clear();
+    //     diagnoList.clear();
+    //     if (result == 'No') {
+    //       Map<String, String> rand = {
+    //         'id': value.question.items[0].id,
+    //         "choice_id": 'absent'
+    //       };
+    //       items.add(rand);
+    //     } else {
+    //       Map<String, String> rand = {
+    //         'id': value.question.items[0].id,
+    //         "choice_id": 'present'
+    //       };
+    //       items.add(rand);
+    //     }
+    //     for (var i = 0; i < value.question.items.length; i++) {
+    //       if (value.question.type == 'single') {
+    //         for (int j = 0; j < value.question.items[0].choices!.length; j++) {
+    //           // tempList.add(value.question.items[0].choices[j].label);
+    //         }
+    //       } else {
+    //         //tempList.add(value.question.items[i].name);
+    //       }
+    //     }
+    //     print(value.conditions.length);
+    //     diagnoList.add(value.conditions[0]);
+    //     for (var i = 0; i < value.conditions.length; i++) {
+    //       diagnoList.add(value.conditions[i]);
+    //     }
+    //     print(value.conditions[0].probability);
+    //     questionAsk++;
+    //     if (questionAsk < 4) {
+    //       // Navigator.pushReplacement(context,
+    //       //     MaterialPageRoute(builder: (context) {
+    //       //   return SymptomsOptions(
+    //       //     question: value.question.text,
+    //       //   );
+    //       // }));
+    //     } else {
+    //       Navigator.push(context, MaterialPageRoute(builder: ((context) {
+    //         return const AssesmentResult();
+    //       })));
+    //     }
+    //   } else {
+    //     Navigator.push(context, MaterialPageRoute(builder: ((context) {
+    //       return const AssesmentResult();
+    //     })));
+    //   }
+    // });
   }
 
   List<Widget> _pageList = [];
