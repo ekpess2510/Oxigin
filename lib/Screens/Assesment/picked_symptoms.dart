@@ -7,8 +7,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Constant/selected_list.dart';
 import '../../Constant/symp_list.dart';
+import '../../Model/diagnosis_model.dart';
 import '../../Service/api_service.dart';
 import '../SearchScreen/Search.dart';
+import 'assesment_result.dart';
 import 'symptoms_options.dart';
 import 'widgets/symptoms_container.dart';
 
@@ -97,6 +99,7 @@ class _PickedSystomsState extends ConsumerState<PickedSystoms> {
                                 name: selectedItems[index],
                                 onPressed: () {
                                   setState(() {
+                                    items.removeAt(index);
                                     selectedItems.removeAt(index);
                                   });
                                 },
@@ -141,6 +144,7 @@ class _PickedSystomsState extends ConsumerState<PickedSystoms> {
                       const Spacer(),
                       GestureDetector(
                         onTap: () {
+                          print(items);
                           onPressed();
                         },
                         child: Container(
@@ -170,30 +174,50 @@ class _PickedSystomsState extends ConsumerState<PickedSystoms> {
   var service = ApiService();
 
   onPressed() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    //var gender = prefs.getString('gender');
-    var age = prefs.getString('age');
+    print(items);
     service.postDiagnosis('diagnosis', 'male', 20, items).then((value) {
-      if (value.question != null) {
-        tempList.clear();
-        diagnoList.clear();
-        for (var i = 0; i < value.question.items.length; i++) {
-          if (value.question.type == 'single') {
-            tempList.add(value.question.items[0].choices[i].label);
-          } else {
-            tempList.add(value.question.items[i].name);
-          }
-        }
-        //print(value.conditions[0].name);
+      //items.removeAt(0);
+      //tempList.clear();
+      print(items);
+      //diagnoList.clear();
+      //print(value.question.items[0].choices);
+      questions = value.question!.text;
+      //print(tempList[0]['id']);
+      //tempList.forEach((element) {});
+      // for (Choice element in value.question.items[0].choices!) {
+      //   print(element.id);
+      //   tempList.add(element);
+      // }
+      // for (var i = 0; i < value.question.items.length; i++) {
+      //   if (value.question.type == 'single') {
+      //     tempList.add(value.question.items[0].choices[2].label);
+      //   } else {
+      //     tempList.add(value.question.items[i].name);
+      //   }
+      // }
+      //print(value.conditions[0].name);
+      //print(tempList);
+      if (value.shouldStop == true) {
+        service
+            .postSpecialist('recommend_specialist', 'male', 20, items)
+            .then((val) {
+          Navigator.push(context, MaterialPageRoute(builder: ((context) {
+            return AssesmentResult(
+              specialist: val,
+              conditions: value.conditions,
+            );
+          })));
+        });
+      } else {
         print(value.conditions.length);
-        diagnoList.add(value.conditions[0]);
-        for (var i = 0; i < value.conditions.length; i++) {
-          diagnoList.add(value.conditions[i]);
-        }
-        print(value.conditions[0].probability);
+        //diagnoList.add(value.conditions);
+        //print(diagnoList[0][0].name);
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return SymptomsOptions(
-            question: value.question.text,
+            size: value.question!.items[0].choices!.length,
+            option: value.question!.items[0].choices!,
+            question: questions,
+            id: value.question!.items[0].id,
           );
         }));
       }

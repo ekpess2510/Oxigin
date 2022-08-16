@@ -20,6 +20,7 @@ class Search extends ConsumerStatefulWidget {
 
 class _SearchState extends ConsumerState<Search> {
   TextEditingController searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final controller = ref.watch(searchNotifier);
@@ -106,7 +107,6 @@ class _SearchState extends ConsumerState<Search> {
                                     controller.searchItems.clear();
                                     controller.isSearching = true;
                                   });
-                                  print(controller.isSearching);
                                 },
                               )),
                         ),
@@ -116,19 +116,21 @@ class _SearchState extends ConsumerState<Search> {
                                 //height: 300,
                                 child: ListView.builder(
                                     shrinkWrap: true,
-                                    itemCount: controller.searchItems.length,
+                                    itemCount:
+                                        controller.searchItems.length > 20
+                                            ? 20
+                                            : controller.searchItems.length,
                                     physics:
                                         const AlwaysScrollableScrollPhysics(),
                                     itemBuilder: ((context, index) {
-                                      print(controller.searchItems[index].name);
                                       return ExpandedSearchTile(
                                         title:
                                             controller.searchItems[index].name,
                                         subTitle: controller
                                             .searchItems[index].commonName,
                                         onTap: () {
-                                          controller.symptonSelected(controller
-                                              .searchItems[index]);
+                                          controller.symptonSelected(
+                                              controller.searchItems[index]);
                                         },
                                       );
                                     })),

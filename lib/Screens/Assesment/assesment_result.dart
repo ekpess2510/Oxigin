@@ -7,11 +7,15 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '../../Constant/result_list.dart';
 import '../../Constant/symp_list.dart';
+import '../../Model/diagnosis_model.dart';
+import '../../Model/specialist_model.dart';
 import 'widgets/ass_result_listtile.dart';
 import 'widgets/modal_sheet.dart';
 
 class AssesmentResult extends StatelessWidget {
-  const AssesmentResult({Key? key}) : super(key: key);
+  final Specialist specialist;
+  final List<Condition> conditions;
+  const AssesmentResult({Key? key, required this.specialist, required this.conditions}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +67,7 @@ class AssesmentResult extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
-                child: Text('Recommedation',
+                child: Text('Recommendation',
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w300,
@@ -102,7 +106,7 @@ class AssesmentResult extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: Text('Infectiologist',
+                child: Text(specialist.recommendedSpecialist!.name,
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -152,7 +156,8 @@ class AssesmentResult extends StatelessWidget {
               ),
               ListView.builder(
                   shrinkWrap: true,
-                  itemCount: diagnoList.length,
+                  itemCount: conditions.length,
+                  physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: ((context, index) {
                     return GestureDetector(
                       onTap: () {
@@ -162,10 +167,8 @@ class AssesmentResult extends StatelessWidget {
                             context: context,
                             builder: (context) {
                               return ModalSheet(
-                                title: diagnoList[index].name,
-                                percentage: resultList[index].subtitle +
-                                    ' ' +
-                                    '${diagnoList[index].probability}',
+                                title: conditions[index].name,
+                                percentage: conditions[index].probability.toString(),
                                 reason: '',
                               );
                             });
@@ -173,9 +176,9 @@ class AssesmentResult extends StatelessWidget {
                       child: Column(
                         children: [
                           AssesmentListTile(
-                            title: diagnoList[index].name,
-                            subtitle: diagnoList[index].commonName,
-                            trailing: '${diagnoList[index].probability}',
+                            title:conditions[index].name,
+                            subtitle: conditions[index].commonName,
+                            trailing: '${conditions[index].probability}',
                           ),
                           const Divider()
                         ],
