@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-import '../../Constant/result_list.dart';
-import '../../Constant/symp_list.dart';
 import '../../Model/diagnosis_model.dart';
 import '../../Model/specialist_model.dart';
+import '../../../Model/condition_model.dart' as con;
+import '../../Service/api_service.dart';
+import '../Home/homescreen.dart';
 import 'widgets/ass_result_listtile.dart';
 import 'widgets/modal_sheet.dart';
 
 class AssesmentResult extends StatelessWidget {
   final Specialist specialist;
   final List<Condition> conditions;
-  const AssesmentResult({Key? key, required this.specialist, required this.conditions}) : super(key: key);
+
+  const AssesmentResult(
+      {Key? key, required this.specialist, required this.conditions})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -161,22 +164,12 @@ class AssesmentResult extends StatelessWidget {
                   itemBuilder: ((context, index) {
                     return GestureDetector(
                       onTap: () {
-                        showMaterialModalBottomSheet(
-                            expand: true,
-                            isDismissible: true,
-                            context: context,
-                            builder: (context) {
-                              return ModalSheet(
-                                title: conditions[index].name,
-                                percentage: conditions[index].probability.toString(),
-                                reason: '',
-                              );
-                            });
+                        getConditions(context, conditions[index].id, '20');
                       },
                       child: Column(
                         children: [
                           AssesmentListTile(
-                            title:conditions[index].name,
+                            title: conditions[index].name,
                             subtitle: conditions[index].commonName,
                             trailing: '${conditions[index].probability}',
                           ),
@@ -223,14 +216,14 @@ class AssesmentResult extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                     color: const Color.fromRGBO(0, 0, 0, 0.7),
                   )),
-              const SizedBox(height: 25),
+              const SizedBox(height: 10),
               Text('the package bla bla bla',
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     color: const Color.fromRGBO(0, 0, 0, 0.7),
                   )),
-              const SizedBox(height: 15),
+              const SizedBox(height: 25),
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: 56,
@@ -250,12 +243,20 @@ class AssesmentResult extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Center(
-                child: Text('Back to homepage',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: const Color.fromRGBO(18, 18, 18, 1),
-                    )),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pushAndRemoveUntil(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const Homescreen();
+                    }), (Route<dynamic> route) => false);
+                  },
+                  child: Text('Back to homepage',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: const Color.fromRGBO(18, 18, 18, 1),
+                      )),
+                ),
               ),
               const SizedBox(height: 30),
             ],
@@ -264,4 +265,22 @@ class AssesmentResult extends StatelessWidget {
       ),
     );
   }
+}
+
+var service = ApiService();
+
+getConditions(BuildContext context, String id, String age) {
+  service.getCondition('conditions', id, age).then((value) {
+    showMaterialModalBottomSheet(
+        expand: true,
+        isDismissible: true,
+        context: context,
+        builder: (context) {
+          return ModalSheet(
+            condition: value,
+          );
+        });
+  }).onError((error, stackTrace) {
+    print(error);
+  });
 }
