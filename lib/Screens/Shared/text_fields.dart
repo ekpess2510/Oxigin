@@ -6,13 +6,14 @@ class AppTextField extends StatelessWidget {
   final String hintText;
   final bool? obscure;
   final String? Function(String?)? validator;
+  final String? Function(String?)? onChanged;
 
   const AppTextField(
       {Key? key,
       required this.controller,
       required this.hintText,
       this.obscure = false,
-      this.validator})
+      this.validator, this.onChanged})
       : super(key: key);
 
   @override
@@ -20,6 +21,7 @@ class AppTextField extends StatelessWidget {
     return TextFormField(
         controller: controller,
         validator: validator,
+        onChanged: onChanged,
         obscureText: obscure!,
         decoration: InputDecoration(
           isDense: true,
@@ -33,7 +35,7 @@ class AppTextField extends StatelessWidget {
           contentPadding: const EdgeInsets.all(18.0),
           enabledBorder: const OutlineInputBorder(
             borderSide:
-                BorderSide(color: Color.fromRGBO(18, 18, 18, 1), width: 1),
+                BorderSide(color: Color.fromRGBO(18, 18, 18, 0.45), width: 1),
           ),
           focusedBorder: const OutlineInputBorder(
             borderSide:
@@ -41,7 +43,7 @@ class AppTextField extends StatelessWidget {
           ),
           errorBorder: const OutlineInputBorder(
             borderSide:
-                BorderSide(color: Color.fromRGBO(18, 18, 18, 1), width: 1),
+                BorderSide(color: Color.fromRGBO(18, 18, 18, 0.45), width: 1),
           ),
           focusedErrorBorder: const OutlineInputBorder(
             borderSide:
