@@ -51,95 +51,89 @@ class _SearchState extends ConsumerState<Search> {
           return Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
             child: SafeArea(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.only(top: 16),
-                          child: Text('Search for a symptom.',
-                              style: TextStyle(
-                                fontFamily: 'Recoleta',
-                                fontSize: 22,
-                                fontWeight: FontWeight.w500,
-                              )),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 22),
-                          child: SizedBox(
-                              height: 52,
-                              child: TextFormField(
-                                controller: searchController,
-                                onFieldSubmitted: (value) {
-                                  if (selectedItems.isEmpty) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                            content: Text(
-                                                'Select at least a symptom')));
-                                  } else {
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: ((context) {
-                                      return const PickedSystoms();
-                                    })));
-                                  }
-                                },
-                                textInputAction: TextInputAction.done,
-                                onChanged: (String value) {
-                                  controller.searchOperation(value, lists);
-                                },
-                                decoration: InputDecoration(
-                                    floatingLabelBehavior:
-                                        FloatingLabelBehavior.never,
-                                    label: const Text('E.g headache'),
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(16)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(16))),
-                                onTap: () {
-                                  setState(() {
-                                    controller.searchItems.clear();
-                                    controller.isSearching = true;
-                                  });
-                                },
-                              )),
-                        ),
-                        controller.searchItems.isNotEmpty
-                            ? SizedBox(
-                                width: MediaQuery.of(context).size.width,
-                                //height: 300,
-                                child: ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount:
-                                        controller.searchItems.length > 20
-                                            ? 20
-                                            : controller.searchItems.length,
-                                    physics:
-                                        const AlwaysScrollableScrollPhysics(),
-                                    itemBuilder: ((context, index) {
-                                      return ExpandedSearchTile(
-                                        title:
-                                            controller.searchItems[index].name,
-                                        subTitle: controller
-                                            .searchItems[index].commonName,
-                                        onTap: () {
-                                          controller.symptonSelected(
-                                              controller.searchItems[index]);
-                                        },
-                                      );
-                                    })),
-                              )
-                            : Container()
-                      ],
-                    ),
-                  ],
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: Text('Search for a symptom.',
+                        style: TextStyle(
+                          fontFamily: 'Recoleta',
+                          fontSize: 22,
+                          fontWeight: FontWeight.w500,
+                        )),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 22),
+                    child: SizedBox(
+                        height: 52,
+                        child: TextFormField(
+                          controller: searchController,
+                          onFieldSubmitted: (value) {
+                            if (selectedItems.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          'Select at least a symptom')));
+                            } else {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: ((context) {
+                                return const PickedSystoms();
+                              })));
+                            }
+                          },
+                          textInputAction: TextInputAction.done,
+                          onChanged: (String value) {
+                            controller.searchOperation(value, lists);
+                          },
+                          decoration: InputDecoration(
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.never,
+                              label: const Text('E.g headache'),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(16)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(16))),
+                          onTap: () {
+                            setState(() {
+                              controller.searchItems.clear();
+                              controller.isSearching = true;
+                            });
+                          },
+                        )),
+                  ),
+                  controller.searchItems.isNotEmpty
+                      ? Expanded(
+                        child: SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            //height: 300,
+                            child: ListView.builder(
+                                //shrinkWrap: true,
+                                itemCount:
+                                    controller.searchItems.length > 20
+                                        ? 20
+                                        : controller.searchItems.length,
+                                physics:
+                                    const BouncingScrollPhysics(),
+                                itemBuilder: ((context, index) {
+                                  return ExpandedSearchTile(
+                                    title:
+                                        controller.searchItems[index].name,
+                                    subTitle: controller
+                                        .searchItems[index].commonName,
+                                    onTap: () {
+                                      controller.symptonSelected(
+                                          controller.searchItems[index]);
+                                    },
+                                  );
+                                })),
+                          ),
+                      )
+                      : Container(),
+                ],
               ),
             ),
           );

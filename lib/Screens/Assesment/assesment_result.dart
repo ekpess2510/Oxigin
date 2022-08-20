@@ -4,9 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-import '../../Model/diagnosis_model.dart';
+import '../../Constant/selected_list.dart';
 import '../../Model/specialist_model.dart';
-import '../../../Model/condition_model.dart' as con;
 import '../../Service/api_service.dart';
 import '../Home/homescreen.dart';
 import 'widgets/ass_result_listtile.dart';
@@ -14,7 +13,7 @@ import 'widgets/modal_sheet.dart';
 
 class AssesmentResult extends StatelessWidget {
   final Specialist specialist;
-  final List<Condition> conditions;
+  final List<dynamic> conditions;
 
   const AssesmentResult(
       {Key? key, required this.specialist, required this.conditions})
@@ -155,7 +154,7 @@ class AssesmentResult extends StatelessWidget {
                     color: const Color.fromRGBO(0, 0, 0, 0.7),
                   )),
               const SizedBox(
-                height: 15,
+                height: 10,
               ),
               ListView.builder(
                   shrinkWrap: true,
@@ -164,14 +163,16 @@ class AssesmentResult extends StatelessWidget {
                   itemBuilder: ((context, index) {
                     return GestureDetector(
                       onTap: () {
-                        getConditions(context, conditions[index].id, '20');
+                        getConditions(context, conditions[index]['id'], '20',
+                            conditions[index]['probability']);
                       },
                       child: Column(
                         children: [
                           AssesmentListTile(
-                            title: conditions[index].name,
-                            subtitle: conditions[index].commonName,
-                            trailing: '${conditions[index].probability}',
+                            title: conditions[index]['name'],
+                            subtitle: conditions[index]['condition_details']
+                                ['severity'],
+                            trailing: '${conditions[index]['probability']}',
                           ),
                           const Divider()
                         ],
@@ -249,6 +250,8 @@ class AssesmentResult extends StatelessWidget {
                         MaterialPageRoute(builder: (context) {
                       return const Homescreen();
                     }), (Route<dynamic> route) => false);
+                    items.clear();
+                    finalList.clear();
                   },
                   child: Text('Back to homepage',
                       style: GoogleFonts.inter(
@@ -269,17 +272,21 @@ class AssesmentResult extends StatelessWidget {
 
 var service = ApiService();
 
-getConditions(BuildContext context, String id, String age) {
+getConditions(BuildContext context, String id, String age, double probability) {
   service.getCondition('conditions', id, age).then((value) {
-    showMaterialModalBottomSheet(
-        expand: true,
-        isDismissible: true,
-        context: context,
-        builder: (context) {
-          return ModalSheet(
-            condition: value,
-          );
-        });
+    service.suggestReason('male', 'suggest', id, age, items).then((val) {
+      showMaterialModalBottomSheet(
+          expand: true,
+          isDismissible: true,
+          context: context,
+          builder: (context) {
+            return ModalSheet(
+              suggest: val,
+              condition: value,
+              probability: probability.toString(),
+            );
+          });
+    });
   }).onError((error, stackTrace) {
     print(error);
   });

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:myoxigin/Model/suggest_reason_model.dart';
 
 import '../../../Model/condition_model.dart';
 
@@ -9,9 +10,14 @@ class ModalSheet extends StatelessWidget {
   // final String percentage;
   // final String reason;
   final Condition condition;
+  final List<Suggest> suggest;
+  final String probability;
+
   const ModalSheet(
       {Key? key,
-      required this.condition})
+      required this.condition,
+      required this.suggest,
+      required this.probability})
       : super(key: key);
 
   @override
@@ -35,12 +41,37 @@ class ModalSheet extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                         color: const Color.fromRGBO(0, 0, 0, 1),
                       )),
-                  subtitle: Text('${condition.prevalence} evidence',
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: const Color.fromRGBO(18, 18, 18, 1),
-                      )),
+                  subtitle: Row(
+                    children: [
+                      Text(
+                        condition.severity == 'mild'
+                            ? 'Mild Evidence'
+                            : condition.severity == 'severe'
+                                ? 'Severe Evidence'
+                                : 'Moderate Evidence',
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: const Color.fromRGBO(18, 18, 18, 1),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 4,
+                      ),
+                      Text(
+                        probability,
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: condition.severity == 'mild'
+                              ? const Color.fromRGBO(18, 18, 18, 1)
+                              : condition.severity == 'severe'
+                                  ? const Color.fromARGB(255, 136, 18, 18)
+                                  : Colors.green,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(
@@ -72,6 +103,18 @@ class ModalSheet extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 20.0),
+                child: Text('Explanation',
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: const Color.fromRGBO(0, 0, 0, 0.7),
+                    )),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0),
                 child: Text('Reasons For',
                     style: GoogleFonts.inter(
                       fontSize: 14,
@@ -80,40 +123,27 @@ class ModalSheet extends StatelessWidget {
                     )),
               ),
               const SizedBox(
-                height: 5,
+                height: 15,
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 20.0),
-                child: Text(condition.acuteness,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: const Color.fromRGBO(0, 0, 0, 0.7),
-                    )),
+                child: ListView.builder(
+                  padding: EdgeInsets.zero,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: suggest.length,
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Text("◉ ${suggest[index].name}",
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: const Color.fromRGBO(0, 0, 0, 0.7),
+                        ));
+                  },
+                ),
               ),
               const SizedBox(
                 height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: Text('Prevalence',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: const Color.fromRGBO(0, 0, 0, 0.7),
-                    )),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: Text(condition.prevalence,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: const Color.fromRGBO(0, 0, 0, 0.7),
-                    )),
               ),
             ],
           ),
