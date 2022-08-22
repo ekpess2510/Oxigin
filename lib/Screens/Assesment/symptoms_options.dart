@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:myoxigin/Screens/Shared/bottom_navigation.dart';
 
 import '../../Constant/selected_list.dart';
 import '../../Model/diagnosis_model.dart';
@@ -123,7 +124,8 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
                   const Spacer(),
                   GestureDetector(
                     onTap: () {
-                      onPressed(controller.selectedOption, widget.id, widget.question);
+                      onPressed(controller.selectedOption, widget.id,
+                          widget.question);
                       controller.selectedOption = '';
                       // Navigator.push(context,
                       //     MaterialPageRoute(builder: ((context) {
@@ -161,11 +163,11 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
     print(finalList);
     if (option == 'No') {
       items.add({'id': id, 'choice_id': 'absent'});
-      finalList.add({'question' : questions, 'id' : id, 'choice': "No"});
+      finalList.add({'question': questions, 'id': id, 'choice': "No"});
       service.postDiagnosis('diagnosis', 'male', 20, items).then((value) {
         //items.removeAt(0);
         questions = value.question!.text;
-        finalList.add(value.question!.items[0]);
+        //finalList.add(value.question!.items[0]);
         if (value.shouldStop == true) {
           service
               .postSpecialist('recommend_specialist', 'male', 20, items)
@@ -173,15 +175,22 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
             String encodes = jsonEncode(value.conditions);
             print(encodes);
             List<dynamic> condition = jsonDecode(encodes);
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: ((context) {
-              return AssesmentResult(
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: ((context) {
+              return NavigationBottomBar(
+                  screen: AssesmentResult(
                 specialist: val,
                 conditions: condition,
-              );
+              ));
+              //   AssesmentResult(
+              //   specialist: val,
+              //   conditions: condition,
+              // );
             })));
           });
         }
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
           return SymptomsOptions(
             size: value.question!.items[0].choices!.length,
             option: value.question!.items[0].choices!,
@@ -192,11 +201,11 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
       });
     } else if (option == 'Yes') {
       items.add({'id': id, 'choice_id': 'present'});
-      finalList.add({'question' : questions, 'id' : id, 'choice': "Yes"});
+      finalList.add({'question': questions, 'id': id, 'choice': "Yes"});
       service.postDiagnosis('diagnosis', 'male', 20, items).then((value) {
         //items.removeAt(0);
         questions = value.question!.text;
-        finalList.add(value.question!.items[0]);
+        //finalList.add(value.question!.items[0]);
         if (value.shouldStop == true) {
           service
               .postSpecialist('recommend_specialist', 'male', 20, items)
@@ -204,15 +213,18 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
             String encodes = jsonEncode(value.conditions);
             print(encodes);
             List<dynamic> condition = jsonDecode(encodes);
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: ((context) {
-              return AssesmentResult(
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: ((context) {
+              return NavigationBottomBar(
+                  screen: AssesmentResult(
                 specialist: val,
                 conditions: condition,
-              );
+              ));
             })));
           });
         } else {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
             return SymptomsOptions(
               size: value.question!.items[0].choices!.length,
               option: value.question!.items[0].choices!,
@@ -224,11 +236,11 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
       });
     } else if (option == "Don't know") {
       items.add({'id': id, 'choice_id': 'unknown'});
-      finalList.add({'question' : questions, 'id' : id, 'choice': "Don't know"});
+      finalList.add({'question': questions, 'id': id, 'choice': "Don't know"});
       service.postDiagnosis('diagnosis', 'male', 20, items).then((value) {
         //items.removeAt(0);
         questions = value.question!.text;
-        finalList.add(value.question!.items[0]);
+        //finalList.add(value.question!.items[0]);
         if (value.shouldStop == true) {
           service
               .postSpecialist('recommend_specialist', 'male', 20, items)
@@ -236,15 +248,18 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
             String encodes = jsonEncode(value.conditions);
             List<dynamic> condition = jsonDecode(encodes);
             //print(condition[0]['name']);
-            Navigator.push(context, MaterialPageRoute(builder: ((context) {
-              return AssesmentResult(
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: ((context) {
+              return NavigationBottomBar(
+                  screen: AssesmentResult(
                 specialist: val,
                 conditions: condition,
-              );
+              ));
             })));
           });
         } else {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
             return SymptomsOptions(
               size: value.question!.items[0].choices!.length,
               option: value.question!.items[0].choices!,
@@ -255,7 +270,5 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
         }
       });
     }
-
   }
-
 }

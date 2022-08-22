@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:myoxigin/Screens/Assesment/widgets/show_answer.dart';
 
 import '../../Constant/selected_list.dart';
 import '../../Model/specialist_model.dart';
@@ -233,7 +234,18 @@ class AssesmentResult extends StatelessWidget {
                     border:
                         Border.all(color: const Color.fromRGBO(18, 18, 18, 1))),
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    showMaterialModalBottomSheet(
+                        expand: true,
+                        isDismissible: true,
+                        context: context,
+                        builder: (BuildContext context) {
+                          return ShowAnswer(
+                            conditions: conditions,
+                          );
+                        });
+                    //ShowAnswer
+                  },
                   child: Text('Show your answers',
                       style: GoogleFonts.inter(
                         fontSize: 12,

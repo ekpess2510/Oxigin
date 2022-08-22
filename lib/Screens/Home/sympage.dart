@@ -13,11 +13,15 @@ class Sympage extends ConsumerStatefulWidget {
   _SympageState createState() => _SympageState();
 }
 
-class _SympageState extends ConsumerState<Sympage> {
+class _SympageState extends ConsumerState<Sympage> with AutomaticKeepAliveClientMixin<Sympage>  {
   final TextEditingController searchController = TextEditingController();
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
         backgroundColor: HexColor('ffffff'),
         appBar: AppBar(
@@ -30,12 +34,22 @@ class _SympageState extends ConsumerState<Sympage> {
           toolbarHeight: 100,
           title: Padding(
             padding: const EdgeInsets.only(top: 32),
-            child: Text('Welcome',
-                style: GoogleFonts.inter(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: HexColor('121212'),
-                )),
+            child: Row(
+              children: [
+                Text('Welcome',
+                    style: GoogleFonts.inter(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: HexColor('121212'),
+                    )),
+                const Spacer(),
+                const CircleAvatar(
+                  backgroundImage: AssetImage('image/avatar.png'),
+                  //backgroundColor: Colors.grey,
+                  radius: 32,
+                )
+              ],
+            ),
           ),
           backgroundColor: HexColor('ffffff'),
           elevation: 0,

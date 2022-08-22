@@ -8,6 +8,7 @@ import '../../Constant/selected_list.dart';
 import '../../Model/search_model.dart';
 import '../../Provider/api_provider.dart';
 import '../Assesment/picked_symptoms.dart';
+import '../Shared/bottom_navigation.dart';
 import '../Shared/expanded_list_tile.dart';
 import 'controller/search_controller.dart';
 
@@ -74,12 +75,15 @@ class _SearchState extends ConsumerState<Search> {
                             if (selectedItems.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                      content: Text(
-                                          'Select at least a symptom')));
+                                      content:
+                                          Text('Select at least a symptom')));
                             } else {
                               Navigator.push(context,
                                   MaterialPageRoute(builder: ((context) {
-                                return const PickedSystoms();
+                                return const NavigationBottomBar(
+                                  screen: PickedSystoms(),
+                                );
+                                //PickedSystoms();
                               })));
                             }
                           },
@@ -92,11 +96,9 @@ class _SearchState extends ConsumerState<Search> {
                                   FloatingLabelBehavior.never,
                               label: const Text('E.g headache'),
                               enabledBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(16)),
+                                  borderRadius: BorderRadius.circular(16)),
                               focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(16))),
+                                  borderRadius: BorderRadius.circular(16))),
                           onTap: () {
                             setState(() {
                               controller.searchItems.clear();
@@ -107,21 +109,18 @@ class _SearchState extends ConsumerState<Search> {
                   ),
                   controller.searchItems.isNotEmpty
                       ? Expanded(
-                        child: SizedBox(
+                          child: SizedBox(
                             width: MediaQuery.of(context).size.width,
                             //height: 300,
                             child: ListView.builder(
                                 //shrinkWrap: true,
-                                itemCount:
-                                    controller.searchItems.length > 20
-                                        ? 20
-                                        : controller.searchItems.length,
-                                physics:
-                                    const BouncingScrollPhysics(),
+                                itemCount: controller.searchItems.length > 20
+                                    ? 20
+                                    : controller.searchItems.length,
+                                physics: const BouncingScrollPhysics(),
                                 itemBuilder: ((context, index) {
                                   return ExpandedSearchTile(
-                                    title:
-                                        controller.searchItems[index].name,
+                                    title: controller.searchItems[index].name,
                                     subTitle: controller
                                         .searchItems[index].commonName,
                                     onTap: () {
@@ -131,7 +130,7 @@ class _SearchState extends ConsumerState<Search> {
                                   );
                                 })),
                           ),
-                      )
+                        )
                       : Container(),
                 ],
               ),

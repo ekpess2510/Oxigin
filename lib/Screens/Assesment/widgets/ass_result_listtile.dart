@@ -27,7 +27,7 @@ class AssesmentListTile extends StatelessWidget {
           subtitle == 'mild'
               ? 'Mild Evidence'
               : subtitle == 'moderate'
-                  ? 'Mild Evidence'
+                  ? 'Moderate Evidence'
                   : 'Severe Evidence',
           style: GoogleFonts.inter(
             fontSize: 14,
@@ -40,9 +40,9 @@ class AssesmentListTile extends StatelessWidget {
             fontWeight: FontWeight.w400,
             color: subtitle == 'severe'
                 ? const Color.fromARGB(255, 136, 18, 18)
-                : subtitle == 'moderate'
-                    ? Colors.green
-                    : Colors.black,
+                : subtitle == 'mild'
+                    ? Colors.black
+                    : Colors.green,
           )),
     );
   }

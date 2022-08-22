@@ -21,9 +21,12 @@ class PickedSystoms extends ConsumerStatefulWidget {
   _PickedSystomsState createState() => _PickedSystomsState();
 }
 
-class _PickedSystomsState extends ConsumerState<PickedSystoms> {
+class _PickedSystomsState extends ConsumerState<PickedSystoms> with AutomaticKeepAliveClientMixin<PickedSystoms>{
+  @override
+  bool get wantKeepAlive => true;
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     //final data = ref.read(diagnosisProvider);
     return Scaffold(
         backgroundColor: HexColor('ffffff'),
@@ -37,12 +40,22 @@ class _PickedSystomsState extends ConsumerState<PickedSystoms> {
           toolbarHeight: 100,
           title: Padding(
             padding: const EdgeInsets.only(top: 32),
-            child: Text('Your Assessment',
-                style: GoogleFonts.inter(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: HexColor('121212'),
-                )),
+            child: Row(
+              children: [
+                Text('Your Assessment',
+                    style: GoogleFonts.inter(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: HexColor('121212'),
+                    )),
+                const Spacer(),
+                const CircleAvatar(
+                  backgroundImage: AssetImage('image/avatar.png'),
+                  //backgroundColor: Colors.grey,
+                  radius: 32,
+                )
+              ],
+            ),
           ),
           backgroundColor: HexColor('ffffff'),
           elevation: 0,
