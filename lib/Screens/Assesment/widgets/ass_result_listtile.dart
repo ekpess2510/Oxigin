@@ -5,6 +5,7 @@ class AssesmentListTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final String trailing;
+
   const AssesmentListTile(
       {Key? key,
       required this.title,
@@ -15,13 +16,19 @@ class AssesmentListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      contentPadding: const EdgeInsets.all(5),
       title: Text(title,
           style: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.w500,
             color: const Color.fromRGBO(0, 0, 0, 0.7),
           )),
-      subtitle: Text(subtitle,
+      subtitle: Text(
+          subtitle == 'mild'
+              ? 'Mild Evidence'
+              : subtitle == 'moderate'
+                  ? 'Moderate Evidence'
+                  : 'Severe Evidence',
           style: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.w400,
@@ -31,7 +38,11 @@ class AssesmentListTile extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: FontWeight.w400,
-            color: Color.fromARGB(255, 136, 18, 18),
+            color: subtitle == 'severe'
+                ? const Color.fromARGB(255, 136, 18, 18)
+                : subtitle == 'mild'
+                    ? Colors.black
+                    : Colors.green,
           )),
     );
   }

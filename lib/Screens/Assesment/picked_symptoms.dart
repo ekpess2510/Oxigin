@@ -1,13 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Constant/selected_list.dart';
 import '../../Constant/symp_list.dart';
-import '../../Model/diagnosis_model.dart';
 import '../../Service/api_service.dart';
 import '../SearchScreen/Search.dart';
 import 'assesment_result.dart';
@@ -21,9 +21,12 @@ class PickedSystoms extends ConsumerStatefulWidget {
   _PickedSystomsState createState() => _PickedSystomsState();
 }
 
-class _PickedSystomsState extends ConsumerState<PickedSystoms> {
+class _PickedSystomsState extends ConsumerState<PickedSystoms> with AutomaticKeepAliveClientMixin<PickedSystoms>{
+  @override
+  bool get wantKeepAlive => true;
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     //final data = ref.read(diagnosisProvider);
     return Scaffold(
         backgroundColor: HexColor('ffffff'),
@@ -37,12 +40,22 @@ class _PickedSystomsState extends ConsumerState<PickedSystoms> {
           toolbarHeight: 100,
           title: Padding(
             padding: const EdgeInsets.only(top: 32),
-            child: Text('Your Assessment',
-                style: GoogleFonts.inter(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: HexColor('121212'),
-                )),
+            child: Row(
+              children: [
+                Text('Your Assessment',
+                    style: GoogleFonts.inter(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: HexColor('121212'),
+                    )),
+                const Spacer(),
+                const CircleAvatar(
+                  backgroundImage: AssetImage('image/avatar.png'),
+                  //backgroundColor: Colors.grey,
+                  radius: 32,
+                )
+              ],
+            ),
           ),
           backgroundColor: HexColor('ffffff'),
           elevation: 0,
@@ -127,44 +140,43 @@ class _PickedSystomsState extends ConsumerState<PickedSystoms> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 42),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text('Back',
-                            style: GoogleFonts.inter(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              color: const Color.fromRGBO(0, 0, 0, 0.7),
-                            )),
-                      ),
-                      const Spacer(),
-                      GestureDetector(
-                        onTap: () {
-                          print(items);
-                          onPressed();
-                        },
-                        child: Container(
-                          height: 48,
-                          width: 97,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                              color: const Color.fromRGBO(18, 18, 18, 1),
-                              borderRadius: BorderRadius.circular(25)),
-                          child: Text('Next',
+                    padding: const EdgeInsets.only(top: 42),
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text('Back',
                               style: GoogleFonts.inter(
-                                fontSize: 14,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w400,
-                                color: const Color.fromRGBO(255, 255, 255, 1),
+                                color: const Color.fromRGBO(0, 0, 0, 0.7),
                               )),
                         ),
-                      )
-                    ],
-                  ),
-                )
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: () {
+                            //print(items);
+                            onPressed();
+                          },
+                          child: Container(
+                            height: 48,
+                            width: 97,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                color: const Color.fromRGBO(18, 18, 18, 1),
+                                borderRadius: BorderRadius.circular(25)),
+                            child: Text('Next',
+                                style: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: const Color.fromRGBO(255, 255, 255, 1),
+                                )),
+                          ),
+                        )
+                      ],
+                    ))
               ],
             ),
           ),
@@ -174,44 +186,23 @@ class _PickedSystomsState extends ConsumerState<PickedSystoms> {
   var service = ApiService();
 
   onPressed() async {
-    print(items);
     service.postDiagnosis('diagnosis', 'male', 20, items).then((value) {
-      //items.removeAt(0);
-      //tempList.clear();
-      print(items);
-      //diagnoList.clear();
-      //print(value.question.items[0].choices);
       questions = value.question!.text;
-      //print(tempList[0]['id']);
-      //tempList.forEach((element) {});
-      // for (Choice element in value.question.items[0].choices!) {
-      //   print(element.id);
-      //   tempList.add(element);
-      // }
-      // for (var i = 0; i < value.question.items.length; i++) {
-      //   if (value.question.type == 'single') {
-      //     tempList.add(value.question.items[0].choices[2].label);
-      //   } else {
-      //     tempList.add(value.question.items[i].name);
-      //   }
-      // }
-      //print(value.conditions[0].name);
-      //print(tempList);
       if (value.shouldStop == true) {
         service
             .postSpecialist('recommend_specialist', 'male', 20, items)
             .then((val) {
+          String encodes = jsonEncode(value.conditions);
+          //print(encodes);
+          List<dynamic> condition = jsonDecode(encodes);
           Navigator.push(context, MaterialPageRoute(builder: ((context) {
             return AssesmentResult(
               specialist: val,
-              conditions: value.conditions,
+              conditions: condition,
             );
           })));
         });
       } else {
-        print(value.conditions.length);
-        //diagnoList.add(value.conditions);
-        //print(diagnoList[0][0].name);
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return SymptomsOptions(
             size: value.question!.items[0].choices!.length,

@@ -1,11 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:myoxigin/Screens/Shared/bottom_navigation.dart';
 
 import '../../Constant/selected_list.dart';
-import '../../Constant/symp_list.dart';
 import '../../Model/diagnosis_model.dart';
 import '../../Service/api_service.dart';
 import 'Controller/symptoms_options_controller.dart';
@@ -122,7 +124,8 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
                   const Spacer(),
                   GestureDetector(
                     onTap: () {
-                      onPressed(controller.selectedOption, widget.id);
+                      onPressed(controller.selectedOption, widget.id,
+                          widget.question);
                       controller.selectedOption = '';
                       // Navigator.push(context,
                       //     MaterialPageRoute(builder: ((context) {
@@ -155,28 +158,39 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
 
   var service = ApiService();
 
-  onPressed(String option, String id) async {
+  onPressed(String option, String id, String questions) async {
     //SharedPreferences prefs = await SharedPreferences.getInstance();
-
+    print(finalList);
     if (option == 'No') {
       items.add({'id': id, 'choice_id': 'absent'});
+      finalList.add({'question': questions, 'id': id, 'choice': "No"});
       service.postDiagnosis('diagnosis', 'male', 20, items).then((value) {
         //items.removeAt(0);
-        print(items);
         questions = value.question!.text;
+        //finalList.add(value.question!.items[0]);
         if (value.shouldStop == true) {
           service
               .postSpecialist('recommend_specialist', 'male', 20, items)
               .then((val) {
-            Navigator.push(context, MaterialPageRoute(builder: ((context) {
-              return AssesmentResult(
+            String encodes = jsonEncode(value.conditions);
+            print(encodes);
+            List<dynamic> condition = jsonDecode(encodes);
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: ((context) {
+              return NavigationBottomBar(
+                  screen: AssesmentResult(
                 specialist: val,
-                conditions: value.conditions,
-              );
+                conditions: condition,
+              ));
+              //   AssesmentResult(
+              //   specialist: val,
+              //   conditions: condition,
+              // );
             })));
           });
         }
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
           return SymptomsOptions(
             size: value.question!.items[0].choices!.length,
             option: value.question!.items[0].choices!,
@@ -187,23 +201,30 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
       });
     } else if (option == 'Yes') {
       items.add({'id': id, 'choice_id': 'present'});
+      finalList.add({'question': questions, 'id': id, 'choice': "Yes"});
       service.postDiagnosis('diagnosis', 'male', 20, items).then((value) {
         //items.removeAt(0);
-        print(items);
         questions = value.question!.text;
+        //finalList.add(value.question!.items[0]);
         if (value.shouldStop == true) {
           service
               .postSpecialist('recommend_specialist', 'male', 20, items)
               .then((val) {
-            Navigator.push(context, MaterialPageRoute(builder: ((context) {
-              return AssesmentResult(
+            String encodes = jsonEncode(value.conditions);
+            print(encodes);
+            List<dynamic> condition = jsonDecode(encodes);
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: ((context) {
+              return NavigationBottomBar(
+                  screen: AssesmentResult(
                 specialist: val,
-                conditions: value.conditions,
-              );
+                conditions: condition,
+              ));
             })));
           });
         } else {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
             return SymptomsOptions(
               size: value.question!.items[0].choices!.length,
               option: value.question!.items[0].choices!,
@@ -215,23 +236,30 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
       });
     } else if (option == "Don't know") {
       items.add({'id': id, 'choice_id': 'unknown'});
+      finalList.add({'question': questions, 'id': id, 'choice': "Don't know"});
       service.postDiagnosis('diagnosis', 'male', 20, items).then((value) {
         //items.removeAt(0);
-        print(items);
         questions = value.question!.text;
+        //finalList.add(value.question!.items[0]);
         if (value.shouldStop == true) {
           service
               .postSpecialist('recommend_specialist', 'male', 20, items)
               .then((val) {
-            Navigator.push(context, MaterialPageRoute(builder: ((context) {
-              return AssesmentResult(
+            String encodes = jsonEncode(value.conditions);
+            List<dynamic> condition = jsonDecode(encodes);
+            //print(condition[0]['name']);
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: ((context) {
+              return NavigationBottomBar(
+                  screen: AssesmentResult(
                 specialist: val,
-                conditions: value.conditions,
-              );
+                conditions: condition,
+              ));
             })));
           });
         } else {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
             return SymptomsOptions(
               size: value.question!.items[0].choices!.length,
               option: value.question!.items[0].choices!,
@@ -242,58 +270,5 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
         }
       });
     }
-    // service.postDiagnosis('diagnosis', 'male', 20, items).then((value) {
-    //   if (value.question != null) {
-    //     tempList.clear();
-    //     diagnoList.clear();
-    //     if (result == 'No') {
-    //       Map<String, String> rand = {
-    //         'id': value.question.items[0].id,
-    //         "choice_id": 'absent'
-    //       };
-    //       items.add(rand);
-    //     } else {
-    //       Map<String, String> rand = {
-    //         'id': value.question.items[0].id,
-    //         "choice_id": 'present'
-    //       };
-    //       items.add(rand);
-    //     }
-    //     for (var i = 0; i < value.question.items.length; i++) {
-    //       if (value.question.type == 'single') {
-    //         for (int j = 0; j < value.question.items[0].choices!.length; j++) {
-    //           // tempList.add(value.question.items[0].choices[j].label);
-    //         }
-    //       } else {
-    //         //tempList.add(value.question.items[i].name);
-    //       }
-    //     }
-    //     print(value.conditions.length);
-    //     diagnoList.add(value.conditions[0]);
-    //     for (var i = 0; i < value.conditions.length; i++) {
-    //       diagnoList.add(value.conditions[i]);
-    //     }
-    //     print(value.conditions[0].probability);
-    //     questionAsk++;
-    //     if (questionAsk < 4) {
-    //       // Navigator.pushReplacement(context,
-    //       //     MaterialPageRoute(builder: (context) {
-    //       //   return SymptomsOptions(
-    //       //     question: value.question.text,
-    //       //   );
-    //       // }));
-    //     } else {
-    //       Navigator.push(context, MaterialPageRoute(builder: ((context) {
-    //         return const AssesmentResult();
-    //       })));
-    //     }
-    //   } else {
-    //     Navigator.push(context, MaterialPageRoute(builder: ((context) {
-    //       return const AssesmentResult();
-    //     })));
-    //   }
-    // });
   }
-
-  List<Widget> _pageList = [];
 }

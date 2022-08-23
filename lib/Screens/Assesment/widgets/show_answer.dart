@@ -1,31 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:myoxigin/Model/suggest_reason_model.dart';
 
-import '../../../Model/condition_model.dart';
+import '../../../Constant/selected_list.dart';
 
-class ModalSheet extends StatelessWidget {
-  // final String title;
-  // final String percentage;
-  // final String reason;
-  final Condition condition;
-  final List<Suggest> suggest;
-  final String probability;
-
-  const ModalSheet(
-      {Key? key,
-      required this.condition,
-      required this.suggest,
-      required this.probability})
-      : super(key: key);
+class ShowAnswer extends StatelessWidget {
+  final List<dynamic> conditions;
+  const ShowAnswer({Key? key, required this.conditions}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         SingleChildScrollView(
-          controller: ModalScrollController.of(context),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -35,48 +21,15 @@ class ModalSheet extends StatelessWidget {
                 alignment: Alignment.bottomLeft,
                 color: const Color.fromRGBO(18, 18, 18, 0.06),
                 child: ListTile(
-                  title: Text(condition.name,
+                  title: Text('Your Answer',
                       style: GoogleFonts.inter(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
                         color: const Color.fromRGBO(0, 0, 0, 1),
                       )),
-                  subtitle: Row(
-                    children: [
-                      Text(
-                        condition.severity == 'mild'
-                            ? 'Mild Evidence'
-                            : condition.severity == 'severe'
-                                ? 'Severe Evidence'
-                                : 'Moderate Evidence',
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: const Color.fromRGBO(18, 18, 18, 1),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 4,
-                      ),
-                      Text(
-                        probability,
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w400,
-                          color: condition.severity == 'mild'
-                              ? const Color.fromRGBO(18, 18, 18, 1)
-                              : condition.severity == 'severe'
-                                  ? const Color.fromARGB(255, 136, 18, 18)
-                                  : Colors.green,
-                        ),
-                      )
-                    ],
-                  ),
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.only(left: 20.0),
                 child: Text('Hint:',
@@ -91,59 +44,84 @@ class ModalSheet extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 20.0),
-                child: Text(condition.extras!.hint,
+                child: Text('Summary of response provided by you',
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                       color: const Color.fromRGBO(0, 0, 0, 0.7),
                     )),
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: Text('Symptoms',
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: const Color.fromRGBO(0, 0, 0, 0.7),
+                    )),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: conditions.length,
+                    padding: EdgeInsets.zero,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: ((context, index) {
+                      return Text('◉ ${conditions[index]['name']}');
+                    })),
               ),
               const SizedBox(
                 height: 20,
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 20.0),
-                child: Text('Explanation',
+                child: Text('Responses',
                     style: GoogleFonts.inter(
                       fontSize: 14,
-                      fontWeight: FontWeight.w400,
+                      fontWeight: FontWeight.w500,
                       color: const Color.fromRGBO(0, 0, 0, 0.7),
                     )),
               ),
               const SizedBox(
-                height: 5,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: Text('Reasons For',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: const Color.fromRGBO(0, 0, 0, 0.7),
-                    )),
-              ),
-              const SizedBox(
-                height: 15,
+                height: 10,
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 20.0),
                 child: ListView.builder(
-                  padding: EdgeInsets.zero,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: suggest.length,
-                  shrinkWrap: true,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Text("◉ ${suggest[index].name}",
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: const Color.fromRGBO(0, 0, 0, 0.7),
-                        ));
-                  },
-                ),
-              ),
-              const SizedBox(
-                height: 10,
+                    shrinkWrap: true,
+                    itemCount: finalList.length,
+                    padding: const EdgeInsets.only(bottom: 10),
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: ((context, index) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "◉ ${finalList[index]['question']}",
+                            style: GoogleFonts.inter(
+                                fontSize: 14, fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(
+                            height: 4,
+                          ),
+                          Text(
+                            finalList[index]['choice'],
+                            style: GoogleFonts.inter(
+                                fontSize: 14, fontWeight: FontWeight.w400),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                        ],
+                      );
+                    })),
               ),
             ],
           ),
