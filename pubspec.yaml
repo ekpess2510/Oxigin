@@ -45,8 +45,8 @@ dependencies:
   percent_indicator: ^4.2.2
   firebase_auth: ^3.6.3
   cloud_firestore: ^3.4.4
-  hive: ^2.2.3
   shimmer: ^2.0.0
+  flutter_secure_storage: ^6.0.0
 
 dev_dependencies:
   flutter_test:

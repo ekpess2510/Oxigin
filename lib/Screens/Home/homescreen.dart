@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:hexcolor/hexcolor.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -26,6 +27,7 @@ class _HomescreenState extends ConsumerState<Homescreen>
 
   PageController? _myPage;
   int? selectedPage;
+  final _secureStorage = const FlutterSecureStorage();
 
   @override
   void initState() {
@@ -41,12 +43,15 @@ class _HomescreenState extends ConsumerState<Homescreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final data = ref.watch(fireBaseAuthProvider);
 
+    final data = ref.watch(fireBaseAuthProvider);
     Future<DocumentSnapshot> getInfo() async {
       var fireStore = FirebaseFirestore.instance;
       DocumentSnapshot snapshot =
           await fireStore.collection('users').doc(data.currentUser!.uid).get();
+      await _secureStorage.write(key: 'age', value: snapshot['age']);
+      await _secureStorage.write(key: 'sex', value: snapshot['phone'].toLowerCase());
+      await _secureStorage.write(key: 'name', value: snapshot['full_name']);
       return snapshot;
     }
 
@@ -76,11 +81,30 @@ class _HomescreenState extends ConsumerState<Homescreen>
                           color: HexColor('121212'),
                         )),
                     const Spacer(),
-                    const CircleAvatar(
-                      backgroundImage: AssetImage('image/avatar.png'),
-                      //backgroundColor: Colors.grey,
-                      radius: 32,
-                    )
+                    Container(
+                      width: 60,
+                      height: 60,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                            color: const Color.fromRGBO(119,184,251, 1),
+                            width: 2
+                        ),
+                        shape: BoxShape.circle,
+                        // image: const DecorationImage(image: AssetImage('image/avatar.png'),
+                        // fit: BoxFit.cover
+                        // ),
+                      ),
+                      child: Center(
+                        child: Image.asset('image/avatar.png'),
+                      ),
+                    ),
+                    // const CircleAvatar(
+                    //   backgroundColor: Colors.white,
+                    //   backgroundImage: AssetImage('image/avatar.png'),
+                    //   //backgroundColor: Colors.grey,
+                    //   radius: 32,
+                    // )
                   ],
                 ),
               ),

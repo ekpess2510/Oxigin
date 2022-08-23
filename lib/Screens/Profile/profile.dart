@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../Provider/auth_provider.dart';
 import '../../repository/auth_repository.dart';
+import 'Assessments/assessments.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -14,15 +16,35 @@ class ProfileScreen extends ConsumerStatefulWidget {
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends ConsumerState<ProfileScreen>
-    with AutomaticKeepAliveClientMixin<ProfileScreen> {
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+  final _secureStorage = const FlutterSecureStorage();
+  var length = 0;
+  String? doc;
+
+
+  getAssessment() async {
+    var name = await _secureStorage.read(key: 'name');
+    doc = name!.replaceAll(' ', '');
+    FirebaseFirestore.instance
+        .collection(name.replaceAll(' ', ''))
+        .get()
+        .then((value) {
+      setState(() {
+        length = value.docs.length;
+      });
+    });
+  }
+
   @override
-  bool get wantKeepAlive => true;
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getAssessment();
+  }
 
   @override
   Widget build(BuildContext context) {
     final data = ref.watch(fireBaseAuthProvider);
-
     Future<DocumentSnapshot> getInfo() async {
       var fireStore = FirebaseFirestore.instance;
       DocumentSnapshot snapshot =
@@ -30,13 +52,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
       return snapshot;
     }
 
-    super.build(context);
+    //super.build(context);
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(
-            height: 60,
+            height: 70,
           ),
           FutureBuilder<DocumentSnapshot>(
               future: getInfo(),
@@ -82,11 +104,30 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                   } else {
                     return Column(
                       children: [
-                        const CircleAvatar(
-                          backgroundImage: AssetImage('image/avatar.png'),
-                          //backgroundColor: Colors.grey,
-                          radius: 34,
+                        Container(
+                          width: 70,
+                          height: 70,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: const Color.fromRGBO(119, 184, 251, 1),
+                                width: 2),
+                            shape: BoxShape.circle,
+                            // image: const DecorationImage(image: AssetImage('image/avatar.png'),
+                            // fit: BoxFit.cover
+                            // ),
+                          ),
+                          child: Center(
+                            child: Image.asset('image/avatar.png'),
+                          ),
                         ),
+                        // const CircleAvatar(
+                        //   backgroundImage: AssetImage('image/avatar.png'),
+                        //   backgroundColor: Colors.grey,
+                        //   //backgroundColor: Colors.grey,
+                        //   radius: 34,
+                        // ),
+                        const SizedBox(height: 10),
                         Text(
                           snapshot.data!['full_name'],
                           style: GoogleFonts.inter(
@@ -171,7 +212,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               }),
           const SizedBox(height: 15),
           InkWell(
-            onTap: (){
+            onTap: () {
               AuthRepositoryImpl().signOut(context);
             },
             child: Container(
@@ -189,29 +230,37 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               ),
             ),
           ),
-          const SizedBox(height: 15),
+          const SizedBox(height: 30),
           Padding(
             padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-            child: Row(
-              children: [
-                Text(
-                  'My Assessments',
-                  style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black),
-                ),
-                const Spacer(),
-                Text(
-                  '8',
-                  style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black),
-                ),
-                const SizedBox(width: 5),
-                const Icon(Icons.arrow_forward_ios, color: Colors.black)
-              ],
+            child: InkWell(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: ((context) {
+                  return Assessments(doc: doc!,);
+                })));
+              },
+              child: Row(
+                children: [
+                  Text(
+                    'My Assessments',
+                    style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black),
+                  ),
+                  const Spacer(),
+                  Text(
+                    '$length',
+                    //getAssessment(),
+                    style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black),
+                  ),
+                  const SizedBox(width: 5),
+                  const Icon(Icons.arrow_forward_ios, color: Colors.black)
+                ],
+              ),
             ),
           ),
         ],

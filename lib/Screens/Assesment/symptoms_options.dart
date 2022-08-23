@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:myoxigin/Screens/Shared/bottom_navigation.dart';
@@ -33,10 +35,25 @@ class SymptomsOptions extends ConsumerStatefulWidget {
 
 class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
   String result = '';
+  final _secureStorage = const FlutterSecureStorage();
+
+  addAssessment(Map results) async {
+    var name = await _secureStorage.read(key: 'name');
+    CollectionReference reference =
+        FirebaseFirestore.instance.collection(name!.replaceAll(' ', ''));
+    await reference.add(results).then((value) => print('done'));
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     var controller = ref.watch(symNotifier);
+
     return Scaffold(
       backgroundColor: HexColor('ffffff'),
       appBar: AppBar(
@@ -69,7 +86,7 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
               color: const Color.fromRGBO(0, 0, 0, 1),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 25, left: 20),
+              padding: const EdgeInsets.only(top: 25, left: 20, right: 10),
               child: Text(widget.question,
                   style: const TextStyle(
                     fontFamily: 'Recoleta',
@@ -95,6 +112,7 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
             ListView.builder(
                 shrinkWrap: true,
                 itemCount: widget.size,
+                physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: ((context, index) {
                   return SelectionRadioButton(
                     val: controller.selectedOption,
@@ -159,27 +177,38 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
   var service = ApiService();
 
   onPressed(String option, String id, String questions) async {
+    Map<String, dynamic> result = {};
     //SharedPreferences prefs = await SharedPreferences.getInstance();
-    print(finalList);
     if (option == 'No') {
       items.add({'id': id, 'choice_id': 'absent'});
       finalList.add({'question': questions, 'id': id, 'choice': "No"});
-      service.postDiagnosis('diagnosis', 'male', 20, items).then((value) {
+      service.postDiagnosis('diagnosis', items).then((value) {
         //items.removeAt(0);
         questions = value.question!.text;
         //finalList.add(value.question!.items[0]);
         if (value.shouldStop == true) {
-          service
-              .postSpecialist('recommend_specialist', 'male', 20, items)
-              .then((val) {
+          service.postSpecialist('recommend_specialist', items).then((val) {
             String encodes = jsonEncode(value.conditions);
-            print(encodes);
             List<dynamic> condition = jsonDecode(encodes);
+            result = {
+              'date': DateTime.now().toString().substring(0, 16),
+              'specialist': val.recommendedSpecialist!.name,
+              'condition': condition,
+              'response': finalList,
+              'items': items
+            };
+            // result['date'] = DateTime.now().toString().substring(0, 16);
+            // result['specialist'] = val.recommendedSpecialist!.name;
+            // result['condition'] = condition;
+            // result['response'] = finalList;
+            // result['items'] = items;
+            addAssessment(result);
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: ((context) {
               return NavigationBottomBar(
                   screen: AssesmentResult(
                 specialist: val,
+                results: result,
                 conditions: condition,
               ));
               //   AssesmentResult(
@@ -202,22 +231,33 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
     } else if (option == 'Yes') {
       items.add({'id': id, 'choice_id': 'present'});
       finalList.add({'question': questions, 'id': id, 'choice': "Yes"});
-      service.postDiagnosis('diagnosis', 'male', 20, items).then((value) {
+      service.postDiagnosis('diagnosis', items).then((value) {
         //items.removeAt(0);
         questions = value.question!.text;
         //finalList.add(value.question!.items[0]);
         if (value.shouldStop == true) {
-          service
-              .postSpecialist('recommend_specialist', 'male', 20, items)
-              .then((val) {
+          service.postSpecialist('recommend_specialist', items).then((val) {
             String encodes = jsonEncode(value.conditions);
-            print(encodes);
             List<dynamic> condition = jsonDecode(encodes);
+            result = {
+              'date': DateTime.now().toString().substring(0, 16),
+              'specialist': val.recommendedSpecialist!.name,
+              'condition': condition,
+              'response': finalList,
+              'items': items
+            };
+            // result['date'] = DateTime.now().toString().substring(0, 16);
+            // result['specialist'] = val.recommendedSpecialist!.name;
+            // result['condition'] = condition;
+            // result['response'] = finalList;
+            // result['items'] = items;
+            addAssessment(result);
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: ((context) {
               return NavigationBottomBar(
                   screen: AssesmentResult(
                 specialist: val,
+                results: result,
                 conditions: condition,
               ));
             })));
@@ -237,22 +277,33 @@ class SymptomsOptionsState extends ConsumerState<SymptomsOptions> {
     } else if (option == "Don't know") {
       items.add({'id': id, 'choice_id': 'unknown'});
       finalList.add({'question': questions, 'id': id, 'choice': "Don't know"});
-      service.postDiagnosis('diagnosis', 'male', 20, items).then((value) {
+      service.postDiagnosis('diagnosis', items).then((value) {
         //items.removeAt(0);
         questions = value.question!.text;
         //finalList.add(value.question!.items[0]);
         if (value.shouldStop == true) {
-          service
-              .postSpecialist('recommend_specialist', 'male', 20, items)
-              .then((val) {
+          service.postSpecialist('recommend_specialist', items).then((val) {
             String encodes = jsonEncode(value.conditions);
             List<dynamic> condition = jsonDecode(encodes);
-            //print(condition[0]['name']);
+            result = {
+              'date': DateTime.now().toString().substring(0, 16),
+              'specialist': val.recommendedSpecialist!.name,
+              'condition': condition,
+              'response': finalList,
+              'items': items
+            };
+            // result['date'] = DateTime.now().toString().substring(0, 16);
+            // result['specialist'] = val.recommendedSpecialist!.name;
+            // result['condition'] = condition;
+            // result['response'] = finalList;
+            // result['items'] = items;
+            addAssessment(result);
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: ((context) {
               return NavigationBottomBar(
                   screen: AssesmentResult(
                 specialist: val,
+                results: result,
                 conditions: condition,
               ));
             })));

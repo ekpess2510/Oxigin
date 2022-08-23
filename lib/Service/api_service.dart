@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 import '../Model/diagnosis_model.dart';
@@ -11,8 +12,10 @@ import '../Model/suggest_reason_model.dart';
 import 'api_base_url_helper.dart';
 
 class ApiService {
+  final _secureStorage = const FlutterSecureStorage();
+
   Future<Diagnosis> postDiagnosis(
-      String endPoint, String sex, int age, List evidence) async {
+      String endPoint, List evidence) async {
     http.Response response;
     Map<String, String> header = {
       'App-Id': ApiBase.appId,
@@ -20,6 +23,9 @@ class ApiService {
       'Content-Type': 'application/json',
       //'Dev-Mode': true,
     };
+    var year = await _secureStorage.read(key: 'age');
+    var sex = await _secureStorage.read(key: 'sex');
+    int age = int.parse(year!);
     Map<String, dynamic> data = {
       'sex': sex,
       'age': {'value': age},
@@ -35,9 +41,8 @@ class ApiService {
     try {
       var url = Uri.parse(ApiBase.baseUrl + endPoint);
       response = await http.post(url, headers: header, body: body);
-      //print(response.statusCode);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        Map<String, dynamic> condition = json.decode(response.body) as Map<String, dynamic>;
+        //Map<String, dynamic> condition = json.decode(response.body) as Map<String, dynamic>;
         //print(condition['conditions']);
         return Diagnosis.fromJson(json.decode(response.body));
       } else if (response.statusCode == 401) {
@@ -53,7 +58,7 @@ class ApiService {
   }
 
   Future<List<Suggest>> suggestReason(
-      String sex, String endPoint, String id, String age, List evidence) async {
+      String endPoint, String id, List evidence) async {
     http.Response response;
     Map<String, String> header = {
       'App-Id': ApiBase.appId,
@@ -61,9 +66,11 @@ class ApiService {
       'Content-Type': 'application/json'
       //'Dev-Mode': true,
     };
+    var age = await _secureStorage.read(key: 'age');
+    var sex = await _secureStorage.read(key: 'sex');
     Map<String, dynamic> data = {
       'sex': sex,
-      'age': {'value': age},
+      'age': {'value': int.parse(age!)},
       "suggest_method": "symptoms",
       'evidence': evidence,
     };
@@ -92,7 +99,9 @@ class ApiService {
   }
 
   Future<Specialist> postSpecialist(
-      String endPoint, String sex, int age, List evidence) async {
+      String endPoint, List evidence) async {
+    var age = await _secureStorage.read(key: 'age');
+    var sex = await _secureStorage.read(key: 'sex');
     http.Response response;
     Map<String, String> header = {
       'App-Id': ApiBase.appId,
@@ -100,13 +109,15 @@ class ApiService {
       'Content-Type': 'application/json',
       //'Dev-Mode': true,
     };
-    Map<String, dynamic> data = {
-      'sex': sex,
-      'age': {'value': age},
-      'evidence': evidence,
-    };
-    var body = json.encode(data);
+    print(age);
+
     try {
+      Map<String, dynamic> data = {
+        'sex': sex,
+        'age': {'value': int.parse(age!)},
+        'evidence': evidence,
+      };
+      var body = json.encode(data);
       var url = Uri.parse(ApiBase.baseUrl + endPoint);
       response = await http.post(url, headers: header, body: body);
       //print(response.statusCode);
@@ -154,7 +165,7 @@ class ApiService {
   }
 
   Future<con.Condition> getCondition(
-      String endPoint, String id, String age) async {
+      String endPoint, String id) async {
     http.Response response;
     Map<String, String> header = {
       'App-Id': ApiBase.appId,
@@ -162,8 +173,9 @@ class ApiService {
       'Accept': 'application/json'
       //'Dev-Mode': true,
     };
+    var age = await _secureStorage.read(key: 'age');
     try {
-      var url = Uri.parse("${ApiBase.baseUrl}$endPoint/$id?age.value=$age");
+      var url = Uri.parse("${ApiBase.baseUrl}$endPoint/$id?age.value=${int.parse(age!)}");
       response = await http.get(url, headers: header);
       print(response.statusCode);
       if (response.statusCode == 200 || response.statusCode == 201) {

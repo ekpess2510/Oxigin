@@ -15,9 +15,10 @@ import 'widgets/modal_sheet.dart';
 class AssesmentResult extends StatelessWidget {
   final Specialist specialist;
   final List<dynamic> conditions;
+  final Map results;
 
   const AssesmentResult(
-      {Key? key, required this.specialist, required this.conditions})
+      {Key? key, required this.specialist, required this.conditions, required this.results})
       : super(key: key);
 
   @override
@@ -164,7 +165,7 @@ class AssesmentResult extends StatelessWidget {
                   itemBuilder: ((context, index) {
                     return GestureDetector(
                       onTap: () {
-                        getConditions(context, conditions[index]['id'], '20',
+                        getConditions(context, conditions[index]['id'],
                             conditions[index]['probability']);
                       },
                       child: Column(
@@ -263,7 +264,9 @@ class AssesmentResult extends StatelessWidget {
                       return const Homescreen();
                     }), (Route<dynamic> route) => false);
                     items.clear();
+                    selectedItems.clear();
                     finalList.clear();
+                    results.clear();
                   },
                   child: Text('Back to homepage',
                       style: GoogleFonts.inter(
@@ -284,9 +287,10 @@ class AssesmentResult extends StatelessWidget {
 
 var service = ApiService();
 
-getConditions(BuildContext context, String id, String age, double probability) {
-  service.getCondition('conditions', id, age).then((value) {
-    service.suggestReason('male', 'suggest', id, age, items).then((val) {
+getConditions(BuildContext context, String id, double probability) {
+  service.getCondition('conditions', id).then((value) {
+    service.suggestReason('suggest', id, items).then((val) {
+      print(val);
       showMaterialModalBottomSheet(
           expand: true,
           isDismissible: true,
