@@ -54,6 +54,14 @@ class AuthRepositoryImpl {
 
   Future<void> signOut(BuildContext context) async {
     await _auth.signOut();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: const Text('Logged out of account successful'),
+      duration: const Duration(seconds: 2),
+      action: SnackBarAction(
+        label: 'Close',
+        onPressed: () {},
+      ),
+    ));
     Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) {
       return const LoginScreen();
     }), (Route<dynamic> route) => false);

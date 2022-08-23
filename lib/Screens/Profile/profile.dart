@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../Provider/auth_provider.dart';
+import '../../repository/auth_repository.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -12,20 +14,19 @@ class ProfileScreen extends ConsumerStatefulWidget {
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends ConsumerState<ProfileScreen>  with AutomaticKeepAliveClientMixin<ProfileScreen> {
-
+class _ProfileScreenState extends ConsumerState<ProfileScreen>
+    with AutomaticKeepAliveClientMixin<ProfileScreen> {
   @override
   bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
-
     final data = ref.watch(fireBaseAuthProvider);
 
     Future<DocumentSnapshot> getInfo() async {
       var fireStore = FirebaseFirestore.instance;
       DocumentSnapshot snapshot =
-      await fireStore.collection('users').doc(data.currentUser!.uid).get();
+          await fireStore.collection('users').doc(data.currentUser!.uid).get();
       return snapshot;
     }
 
@@ -37,60 +38,155 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>  with AutomaticKe
           const SizedBox(
             height: 60,
           ),
-          const CircleAvatar(
-            backgroundImage: AssetImage('image/avatar.png'),
-            //backgroundColor: Colors.grey,
-            radius: 34,
-          ),
-          Text(
-            'Emmanuel Ekpenyong',
-            style: GoogleFonts.inter(
-                fontSize: 20, fontWeight: FontWeight.w600, color: Colors.black),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset('image/age.png'),
-              const SizedBox(width: 5),
-              Text(
-                '19 Years',
-                style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.black),
-              ),
-              const SizedBox(width: 20),
-              Image.asset('image/gender.png'),
-              const SizedBox(width: 5),
-              Text(
-                'Male',
-                style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.black),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'ekpenyong2510@gmail.com',
-            style: GoogleFonts.inter(
-                fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black),
-          ),
+          FutureBuilder<DocumentSnapshot>(
+              future: getInfo(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(
+                      children: [
+                        Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: const CircleAvatar(
+                            //backgroundImage: AssetImage('image/avatar.png'),
+                            //backgroundColor: Colors.grey,
+                            radius: 34,
+                          ),
+                        ),
+                        Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: const SizedBox(
+                              width: 100,
+                              height: 30,
+                            )),
+                        const SizedBox(height: 10),
+                        Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: const SizedBox(
+                              width: 180,
+                              height: 30,
+                            )),
+                        const SizedBox(height: 10),
+                        Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: const SizedBox(
+                              width: 180,
+                              height: 30,
+                            )),
+                      ],
+                    );
+                  } else {
+                    return Column(
+                      children: [
+                        const CircleAvatar(
+                          backgroundImage: AssetImage('image/avatar.png'),
+                          //backgroundColor: Colors.grey,
+                          radius: 34,
+                        ),
+                        Text(
+                          snapshot.data!['full_name'],
+                          style: GoogleFonts.inter(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset('image/age.png'),
+                            const SizedBox(width: 5),
+                            Text(
+                              snapshot.data!['age'],
+                              style: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black),
+                            ),
+                            const SizedBox(width: 20),
+                            Image.asset('image/gender.png'),
+                            const SizedBox(width: 5),
+                            Text(
+                              "${snapshot.data!['phone']}",
+                              style: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          snapshot.data!['email'],
+                          style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black),
+                        ),
+                      ],
+                    );
+                  }
+                } else {
+                  return Column(
+                    children: [
+                      Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: const CircleAvatar(
+                          //backgroundImage: AssetImage('image/avatar.png'),
+                          //backgroundColor: Colors.grey,
+                          radius: 34,
+                        ),
+                      ),
+                      Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: const SizedBox(
+                            width: 100,
+                            height: 30,
+                          )),
+                      const SizedBox(height: 10),
+                      Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: const SizedBox(
+                            width: 180,
+                            height: 30,
+                          )),
+                      const SizedBox(height: 10),
+                      Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: const SizedBox(
+                            width: 180,
+                            height: 30,
+                          )),
+                    ],
+                  );
+                }
+              }),
           const SizedBox(height: 15),
-          Container(
-            width: 94,
-            height: 32,
-            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 24),
-            decoration:
-                const BoxDecoration(color: Color.fromRGBO(235, 87, 87, 1)),
-            child: Text(
-              'Log Out',
-              style: GoogleFonts.inter(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white),
+          InkWell(
+            onTap: (){
+              AuthRepositoryImpl().signOut(context);
+            },
+            child: Container(
+              width: 94,
+              height: 32,
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
+              decoration:
+                  const BoxDecoration(color: Color.fromRGBO(235, 87, 87, 1)),
+              child: Text(
+                'Log Out',
+                style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white),
+              ),
             ),
           ),
           const SizedBox(height: 15),
@@ -118,7 +214,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>  with AutomaticKe
               ],
             ),
           ),
-
         ],
       ),
     );
