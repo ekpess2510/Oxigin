@@ -9,6 +9,7 @@ import '../../Provider/auth_provider.dart';
 import '../Shared/text_button.dart';
 import '../Shared/text_fields.dart';
 import '../Signup/signup_screen.dart';
+import '../auth/forgot_password.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -128,11 +129,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     Align(
                       alignment: Alignment.bottomRight,
-                      child: Text('Forgot password?',
-                          style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: const Color.fromRGBO(18, 18, 18, 1))),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ForgetPassword()));
+                          //ForgetPassword
+                        },
+                        child: Text('Forgot password?',
+                            style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: const Color.fromRGBO(18, 18, 18, 1))),
+                      ),
                     ),
                     const SizedBox(
                       height: 30,

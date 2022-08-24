@@ -49,11 +49,24 @@ class _PickedSystomsState extends ConsumerState<PickedSystoms> with AutomaticKee
                       color: HexColor('121212'),
                     )),
                 const Spacer(),
-                const CircleAvatar(
-                  backgroundImage: AssetImage('image/avatar.png'),
-                  //backgroundColor: Colors.grey,
-                  radius: 32,
-                )
+                Container(
+                  width: 60,
+                  height: 60,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                        color: const Color.fromRGBO(119,184,251, 1),
+                        width: 2
+                    ),
+                    shape: BoxShape.circle,
+                    // image: const DecorationImage(image: AssetImage('image/avatar.png'),
+                    // fit: BoxFit.cover
+                    // ),
+                  ),
+                  child: Center(
+                    child: Image.asset('image/avatar.png'),
+                  ),
+                ),
               ],
             ),
           ),
@@ -186,18 +199,22 @@ class _PickedSystomsState extends ConsumerState<PickedSystoms> with AutomaticKee
   var service = ApiService();
 
   onPressed() async {
-    service.postDiagnosis('diagnosis', 'male', 20, items).then((value) {
+    Map result = {};
+    service.postDiagnosis('diagnosis', items).then((value) {
       questions = value.question!.text;
       if (value.shouldStop == true) {
         service
-            .postSpecialist('recommend_specialist', 'male', 20, items)
+            .postSpecialist('recommend_specialist', items)
             .then((val) {
           String encodes = jsonEncode(value.conditions);
           //print(encodes);
           List<dynamic> condition = jsonDecode(encodes);
+          result['specialist'] = val.recommendedSpecialist!.name;
+          result['condition'] = condition;
           Navigator.push(context, MaterialPageRoute(builder: ((context) {
             return AssesmentResult(
               specialist: val,
+              results: result,
               conditions: condition,
             );
           })));

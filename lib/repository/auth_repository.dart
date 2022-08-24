@@ -81,6 +81,10 @@ class AuthRepositoryImpl {
             onPressed: () {},
           ),
         ));
+        Navigator.pushAndRemoveUntil(context,
+            MaterialPageRoute(builder: (context) {
+          return const LoginScreen();
+        }), (Route<dynamic> route) => false);
         /* Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {
               return EmailSent(email: email,);

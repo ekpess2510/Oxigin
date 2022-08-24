@@ -43,11 +43,24 @@ class _SympageState extends ConsumerState<Sympage> with AutomaticKeepAliveClient
                       color: HexColor('121212'),
                     )),
                 const Spacer(),
-                const CircleAvatar(
-                  backgroundImage: AssetImage('image/avatar.png'),
-                  //backgroundColor: Colors.grey,
-                  radius: 32,
-                )
+                Container(
+                  width: 60,
+                  height: 60,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                        color: const Color.fromRGBO(119,184,251, 1),
+                        width: 2
+                    ),
+                    shape: BoxShape.circle,
+                    // image: const DecorationImage(image: AssetImage('image/avatar.png'),
+                    // fit: BoxFit.cover
+                    // ),
+                  ),
+                  child: Center(
+                    child: Image.asset('image/avatar.png'),
+                  ),
+                ),
               ],
             ),
           ),
